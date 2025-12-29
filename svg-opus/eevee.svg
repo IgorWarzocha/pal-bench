@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Eevee -->
+  <!-- Body -->
+  <ellipse cx="50" cy="65" rx="20" ry="18" fill="#C4996C"/>
+  
+  <!-- Fluffy Neck/Chest -->
+  <ellipse cx="50" cy="52" rx="18" ry="14" fill="#E8D9B0"/>
+  <circle cx="38" cy="50" r="6" fill="#E8D9B0"/>
+  <circle cx="62" cy="50" r="6" fill="#E8D9B0"/>
+  <circle cx="44" cy="55" r="5" fill="#E8D9B0"/>
+  <circle cx="56" cy="55" r="5" fill="#E8D9B0"/>
+  
+  <!-- Head -->
+  <ellipse cx="50" cy="35" rx="16" ry="14" fill="#C4996C"/>
+  
+  <!-- Ears -->
+  <path d="M30 32 L18 10 L38 28" fill="#C4996C"/>
+  <path d="M23 15 L32 26" stroke="#8B4513" stroke-width="3"/>
+  <path d="M70 32 L82 10 L62 28" fill="#C4996C"/>
+  <path d="M77 15 L68 26" stroke="#8B4513" stroke-width="3"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="43" cy="33" rx="5" ry="6" fill="#2C2C2C"/>
+  <ellipse cx="57" cy="33" rx="5" ry="6" fill="#2C2C2C"/>
+  <circle cx="44" cy="31" r="2" fill="#FFFFFF"/>
+  <circle cx="58" cy="31" r="2" fill="#FFFFFF"/>
+  
+  <!-- Nose -->
+  <ellipse cx="50" cy="40" rx="3" ry="2" fill="#2C2C2C"/>
+  
+  <!-- Mouth -->
+  <path d="M47 43 Q50 46 53 43" stroke="#2C2C2C" stroke-width="1" fill="none"/>
+  
+  <!-- Tail (bushy) -->
+  <path d="M72 60 Q88 55 90 45 Q92 38 85 42 Q88 35 82 40 Q78 35 78 45 Q75 50 72 55" fill="#E8D9B0"/>
+  
+  <!-- Legs -->
+  <ellipse cx="38" cy="82" rx="7" ry="6" fill="#C4996C"/>
+  <ellipse cx="62" cy="82" rx="7" ry="6" fill="#C4996C"/>
+  <ellipse cx="35" cy="78" rx="5" ry="8" fill="#C4996C"/>
+  <ellipse cx="65" cy="78" rx="5" ry="8" fill="#C4996C"/>
+</svg>

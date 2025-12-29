@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Magikarp -->
+  <!-- Body -->
+  <ellipse cx="50" cy="50" rx="30" ry="20" fill="#FF6B35"/>
+  
+  <!-- Scales pattern -->
+  <path d="M25 45 Q30 50 25 55" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  <path d="M32 42 Q37 50 32 58" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  <path d="M40 40 Q45 50 40 60" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  <path d="M48 38 Q53 50 48 62" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  <path d="M56 40 Q61 50 56 60" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  <path d="M64 42 Q69 50 64 58" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  
+  <!-- Fins -->
+  <!-- Top fin -->
+  <path d="M35 30 L30 20 L40 25 L45 15 L50 25 L55 18 L55 30" fill="#FFE082"/>
+  <!-- Bottom fins -->
+  <path d="M40 70 L35 80 L45 75 L50 82 L55 70" fill="#FFE082"/>
+  
+  <!-- Tail -->
+  <path d="M80 50 L95 35 L88 50 L95 65 L80 50" fill="#FFE082"/>
+  
+  <!-- Whiskers -->
+  <path d="M22 45 Q10 40 5 45" stroke="#FFE082" stroke-width="3" fill="none"/>
+  <path d="M22 55 Q10 60 5 55" stroke="#FFE082" stroke-width="3" fill="none"/>
+  
+  <!-- Eye -->
+  <circle cx="30" cy="48" r="8" fill="#FFFFFF"/>
+  <circle cx="32" cy="48" r="5" fill="#2C2C2C"/>
+  <circle cx="33" cy="46" r="2" fill="#FFFFFF"/>
+  
+  <!-- Mouth (derpy open) -->
+  <ellipse cx="18" cy="55" rx="5" ry="4" fill="#FFFFFF"/>
+  <path d="M14 52 Q18 50 22 52" stroke="#CC4A1D" stroke-width="1" fill="none"/>
+  
+  <!-- Crown/crest -->
+  <ellipse cx="25" cy="35" rx="4" ry="3" fill="#FFE082"/>
+  
+  <!-- Splash effect -->
+  <path d="M85 30 L88 25 M90 35 L95 32 M88 65 L92 70 M85 70 L88 75" stroke="#64B5F6" stroke-width="2"/>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Jigglypuff -->
+  <!-- Body (perfectly round) -->
+  <circle cx="50" cy="55" r="32" fill="#FFB6C1"/>
+  
+  <!-- Hair curl -->
+  <ellipse cx="50" cy="20" rx="8" ry="6" fill="#FFB6C1"/>
+  <path d="M42 22 Q50 12 58 22" fill="#FFB6C1"/>
+  
+  <!-- Ears -->
+  <ellipse cx="25" cy="35" rx="8" ry="12" fill="#FFB6C1"/>
+  <ellipse cx="25" cy="35" rx="4" ry="8" fill="#2C2C2C"/>
+  <ellipse cx="75" cy="35" rx="8" ry="12" fill="#FFB6C1"/>
+  <ellipse cx="75" cy="35" rx="4" ry="8" fill="#2C2C2C"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="40" cy="50" rx="10" ry="12" fill="#FFFFFF"/>
+  <ellipse cx="60" cy="50" rx="10" ry="12" fill="#FFFFFF"/>
+  <ellipse cx="42" cy="52" rx="5" ry="6" fill="#40E0D0"/>
+  <ellipse cx="62" cy="52" rx="5" ry="6" fill="#40E0D0"/>
+  <circle cx="40" cy="48" r="3" fill="#FFFFFF"/>
+  <circle cx="60" cy="48" r="3" fill="#FFFFFF"/>
+  <circle cx="42" cy="52" r="2" fill="#2C2C2C"/>
+  <circle cx="62" cy="52" r="2" fill="#2C2C2C"/>
+  
+  <!-- Mouth -->
+  <ellipse cx="50" cy="68" rx="4" ry="3" fill="#2C2C2C"/>
+  <path d="M47 66 Q50 62 53 66" stroke="#2C2C2C" stroke-width="1" fill="none"/>
+  
+  <!-- Arms -->
+  <ellipse cx="22" cy="60" rx="6" ry="8" fill="#FFB6C1"/>
+  <ellipse cx="78" cy="60" rx="6" ry="8" fill="#FFB6C1"/>
+  
+  <!-- Feet -->
+  <ellipse cx="38" cy="85" rx="10" ry="6" fill="#FFB6C1"/>
+  <ellipse cx="62" cy="85" rx="10" ry="6" fill="#FFB6C1"/>
+  
+  <!-- Microphone (signature) -->
+  <rect x="82" y="55" width="4" height="15" fill="#888"/>
+  <circle cx="84" cy="52" r="6" fill="#888"/>
+  <ellipse cx="84" cy="52" rx="5" ry="5" fill="#666"/>
+  <path d="M80 50 L88 54 M80 52 L88 52 M80 54 L88 50" stroke="#444" stroke-width="0.5"/>
+</svg>

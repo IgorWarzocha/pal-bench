@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Bulbasaur -->
+  <!-- Body -->
+  <ellipse cx="50" cy="65" rx="30" ry="22" fill="#64B5A0"/>
+  
+  <!-- Bulb -->
+  <ellipse cx="50" cy="40" rx="18" ry="15" fill="#3D8B40"/>
+  <path d="M50 25 L45 35 L50 32 L55 35 Z" fill="#4CAF50"/>
+  <path d="M42 30 L38 40 L45 38" fill="#4CAF50"/>
+  <path d="M58 30 L62 40 L55 38" fill="#4CAF50"/>
+  
+  <!-- Spots on body -->
+  <ellipse cx="35" cy="60" rx="5" ry="4" fill="#3D7A6D"/>
+  <ellipse cx="65" cy="58" rx="4" ry="3" fill="#3D7A6D"/>
+  <ellipse cx="55" cy="70" rx="4" ry="3" fill="#3D7A6D"/>
+  
+  <!-- Head -->
+  <ellipse cx="50" cy="55" rx="20" ry="16" fill="#64B5A0"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="42" cy="50" rx="5" ry="6" fill="#FFFFFF"/>
+  <ellipse cx="58" cy="50" rx="5" ry="6" fill="#FFFFFF"/>
+  <ellipse cx="43" cy="51" rx="3" ry="4" fill="#E53935"/>
+  <ellipse cx="59" cy="51" rx="3" ry="4" fill="#E53935"/>
+  <circle cx="44" cy="49" r="1.5" fill="#FFFFFF"/>
+  <circle cx="60" cy="49" r="1.5" fill="#FFFFFF"/>
+  
+  <!-- Mouth -->
+  <path d="M45 60 Q50 63 55 60" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+  
+  <!-- Ears -->
+  <path d="M32 42 L25 35 L35 45" fill="#64B5A0"/>
+  <path d="M68 42 L75 35 L65 45" fill="#64B5A0"/>
+  
+  <!-- Legs -->
+  <ellipse cx="30" cy="82" rx="8" ry="6" fill="#64B5A0"/>
+  <ellipse cx="70" cy="82" rx="8" ry="6" fill="#64B5A0"/>
+  <ellipse cx="38" cy="85" rx="7" ry="5" fill="#64B5A0"/>
+  <ellipse cx="62" cy="85" rx="7" ry="5" fill="#64B5A0"/>
+</svg>

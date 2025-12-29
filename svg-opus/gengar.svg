@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Gengar -->
+  <!-- Body -->
+  <ellipse cx="50" cy="55" rx="35" ry="32" fill="#705898"/>
+  
+  <!-- Spikes on head -->
+  <path d="M25 30 L15 15 L30 35" fill="#705898"/>
+  <path d="M50 25 L50 8 L55 28" fill="#705898"/>
+  <path d="M75 30 L85 15 L70 35" fill="#705898"/>
+  
+  <!-- Ears -->
+  <path d="M20 40 L8 30 L22 45" fill="#705898"/>
+  <path d="M80 40 L92 30 L78 45" fill="#705898"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="38" cy="45" rx="8" ry="6" fill="#FFFFFF"/>
+  <ellipse cx="62" cy="45" rx="8" ry="6" fill="#FFFFFF"/>
+  <ellipse cx="40" cy="45" rx="4" ry="5" fill="#E53935"/>
+  <ellipse cx="64" cy="45" rx="4" ry="5" fill="#E53935"/>
+  <circle cx="41" cy="43" r="1.5" fill="#FFFFFF"/>
+  <circle cx="65" cy="43" r="1.5" fill="#FFFFFF"/>
+  
+  <!-- Sinister Grin -->
+  <path d="M30 62 Q50 80 70 62" fill="#FFFFFF"/>
+  <path d="M32 62 L36 68 L40 62 L44 68 L48 62 L52 68 L56 62 L60 68 L64 62 L68 68" stroke="#705898" stroke-width="2" fill="none"/>
+  
+  <!-- Arms/Hands -->
+  <ellipse cx="15" cy="55" rx="8" ry="10" fill="#705898"/>
+  <ellipse cx="85" cy="55" rx="8" ry="10" fill="#705898"/>
+  <path d="M10 60 L5 68 M15 62 L12 70 M20 60 L22 68" stroke="#705898" stroke-width="3"/>
+  <path d="M90 60 L95 68 M85 62 L88 70 M80 60 L78 68" stroke="#705898" stroke-width="3"/>
+  
+  <!-- Legs -->
+  <ellipse cx="35" cy="85" rx="10" ry="6" fill="#705898"/>
+  <ellipse cx="65" cy="85" rx="10" ry="6" fill="#705898"/>
+  
+  <!-- Shadow effect -->
+  <ellipse cx="50" cy="95" rx="30" ry="4" fill="#4A3D6D" opacity="0.5"/>
+</svg>

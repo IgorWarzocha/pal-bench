@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Voltorb -->
+  <!-- Main ball body -->
+  <circle cx="50" cy="50" r="38" fill="#E53935"/>
+  
+  <!-- Bottom half (white) -->
+  <path d="M12 50 A38 38 0 0 0 88 50 L12 50" fill="#FFFFFF"/>
+  
+  <!-- Center band -->
+  <rect x="12" y="47" width="76" height="6" fill="#2C2C2C"/>
+  
+  <!-- Button in center -->
+  <circle cx="50" cy="50" r="8" fill="#FFFFFF"/>
+  <circle cx="50" cy="50" r="5" fill="#2C2C2C"/>
+  
+  <!-- Eyes (angry) -->
+  <ellipse cx="38" cy="35" rx="8" ry="9" fill="#FFFFFF"/>
+  <ellipse cx="62" cy="35" rx="8" ry="9" fill="#FFFFFF"/>
+  <circle cx="40" cy="37" r="5" fill="#2C2C2C"/>
+  <circle cx="64" cy="37" r="5" fill="#2C2C2C"/>
+  <circle cx="41" cy="35" r="2" fill="#FFFFFF"/>
+  <circle cx="65" cy="35" r="2" fill="#FFFFFF"/>
+  
+  <!-- Angry eyebrows -->
+  <path d="M28 28 L44 32" stroke="#E53935" stroke-width="3" stroke-linecap="round"/>
+  <path d="M72 28 L56 32" stroke="#E53935" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Shine -->
+  <ellipse cx="30" cy="25" rx="6" ry="4" fill="#FF6B6B" opacity="0.6"/>
+  
+  <!-- Electric sparks -->
+  <path d="M15 20 L10 25 L18 23 L12 30" stroke="#FFD700" stroke-width="2" fill="none"/>
+  <path d="M85 20 L90 25 L82 23 L88 30" stroke="#FFD700" stroke-width="2" fill="none"/>
+</svg>

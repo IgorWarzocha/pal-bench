@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Charmander -->
+  <!-- Tail with Flame -->
+  <path d="M75 70 Q85 65 88 55 Q90 50 85 48 Q88 42 82 45 Q85 38 78 42 Q80 35 72 45 Q68 55 70 65" fill="#FF9800"/>
+  <path d="M85 48 Q87 43 82 45 Q84 40 78 44 Q75 42 76 48" fill="#FFEB3B"/>
+  <path d="M75 70 Q82 65 85 55" stroke="#E65100" stroke-width="2" fill="none"/>
+  
+  <!-- Body -->
+  <ellipse cx="50" cy="60" rx="22" ry="25" fill="#FF8A65"/>
+  
+  <!-- Belly -->
+  <ellipse cx="50" cy="65" rx="14" ry="16" fill="#FFCC80"/>
+  
+  <!-- Head -->
+  <ellipse cx="50" cy="32" rx="18" ry="16" fill="#FF8A65"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="43" cy="30" rx="5" ry="6" fill="#FFFFFF"/>
+  <ellipse cx="57" cy="30" rx="5" ry="6" fill="#FFFFFF"/>
+  <ellipse cx="44" cy="31" rx="3" ry="4" fill="#2196F3"/>
+  <ellipse cx="58" cy="31" rx="3" ry="4" fill="#2196F3"/>
+  <circle cx="45" cy="29" r="1.5" fill="#FFFFFF"/>
+  <circle cx="59" cy="29" r="1.5" fill="#FFFFFF"/>
+  <circle cx="44" cy="31" r="1" fill="#2C2C2C"/>
+  <circle cx="58" cy="31" r="1" fill="#2C2C2C"/>
+  
+  <!-- Snout -->
+  <ellipse cx="50" cy="38" rx="8" ry="5" fill="#FF8A65"/>
+  <circle cx="47" cy="36" r="1.5" fill="#2C2C2C"/>
+  <circle cx="53" cy="36" r="1.5" fill="#2C2C2C"/>
+  
+  <!-- Mouth -->
+  <path d="M45 41 Q50 44 55 41" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+  
+  <!-- Arms -->
+  <ellipse cx="30" cy="55" rx="6" ry="10" fill="#FF8A65"/>
+  <ellipse cx="70" cy="55" rx="6" ry="10" fill="#FF8A65"/>
+  
+  <!-- Claws on arms -->
+  <path d="M26 62 L24 66 M30 64 L30 68 M34 62 L36 66" stroke="#FFFFFF" stroke-width="1.5"/>
+  <path d="M74 62 L76 66 M70 64 L70 68 M66 62 L64 66" stroke="#FFFFFF" stroke-width="1.5"/>
+  
+  <!-- Legs -->
+  <ellipse cx="38" cy="85" rx="8" ry="5" fill="#FF8A65"/>
+  <ellipse cx="62" cy="85" rx="8" ry="5" fill="#FF8A65"/>
+  <path d="M32 85 L30 90 M38 87 L38 92 M44 85 L46 90" stroke="#FFFFFF" stroke-width="1.5"/>
+  <path d="M68 85 L70 90 M62 87 L62 92 M56 85 L54 90" stroke="#FFFFFF" stroke-width="1.5"/>
+</svg>

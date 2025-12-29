@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Psyduck -->
+  <!-- Body -->
+  <ellipse cx="50" cy="65" rx="25" ry="22" fill="#F9D923"/>
+  
+  <!-- Head -->
+  <ellipse cx="50" cy="38" rx="22" ry="20" fill="#F9D923"/>
+  
+  <!-- Hair tuft -->
+  <ellipse cx="45" cy="18" rx="4" ry="8" fill="#2C2C2C"/>
+  <ellipse cx="50" cy="16" rx="4" ry="10" fill="#2C2C2C"/>
+  <ellipse cx="55" cy="18" rx="4" ry="8" fill="#2C2C2C"/>
+  
+  <!-- Eyes (confused look) -->
+  <ellipse cx="40" cy="38" rx="8" ry="9" fill="#FFFFFF"/>
+  <ellipse cx="60" cy="38" rx="8" ry="9" fill="#FFFFFF"/>
+  <circle cx="40" cy="40" r="4" fill="#2C2C2C"/>
+  <circle cx="60" cy="40" r="4" fill="#2C2C2C"/>
+  <circle cx="41" cy="38" r="1.5" fill="#FFFFFF"/>
+  <circle cx="61" cy="38" r="1.5" fill="#FFFFFF"/>
+  
+  <!-- Confused eyebrows -->
+  <path d="M33 30 L45 33" stroke="#2C2C2C" stroke-width="2"/>
+  <path d="M67 30 L55 33" stroke="#2C2C2C" stroke-width="2"/>
+  
+  <!-- Beak -->
+  <ellipse cx="50" cy="52" rx="10" ry="6" fill="#D4A574"/>
+  <path d="M40 52 Q50 48 60 52" stroke="#8B4513" stroke-width="1" fill="none"/>
+  <circle cx="45" cy="50" r="1.5" fill="#2C2C2C"/>
+  <circle cx="55" cy="50" r="1.5" fill="#2C2C2C"/>
+  
+  <!-- Arms holding head (signature pose) -->
+  <ellipse cx="28" cy="45" rx="8" ry="6" fill="#F9D923"/>
+  <ellipse cx="72" cy="45" rx="8" ry="6" fill="#F9D923"/>
+  
+  <!-- Tail -->
+  <ellipse cx="78" cy="70" rx="6" ry="8" fill="#F9D923"/>
+  
+  <!-- Feet -->
+  <ellipse cx="38" cy="85" rx="10" ry="5" fill="#D4A574"/>
+  <ellipse cx="62" cy="85" rx="10" ry="5" fill="#D4A574"/>
+  
+  <!-- Headache lines -->
+  <path d="M25 25 L20 20" stroke="#E53935" stroke-width="1.5"/>
+  <path d="M22 28 L15 25" stroke="#E53935" stroke-width="1.5"/>
+  <path d="M75 25 L80 20" stroke="#E53935" stroke-width="1.5"/>
+  <path d="M78 28 L85 25" stroke="#E53935" stroke-width="1.5"/>
+</svg>

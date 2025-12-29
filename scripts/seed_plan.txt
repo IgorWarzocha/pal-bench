@@ -1,0 +1,52 @@
+// scripts/seed_pokedex.ts
+import { fetch } from "node-fetch"; // Assuming node env, or use native fetch in newer node
+import { ConvexHttpClient } from "convex/browser";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
+const CONVEX_URL = process.env.VITE_CONVEX_URL;
+if (!CONVEX_URL) {
+  console.error("Missing VITE_CONVEX_URL in .env.local");
+  process.exit(1);
+}
+
+const client = new ConvexHttpClient(CONVEX_URL);
+
+async function main() {
+  console.log("Fetching Pokedex...");
+  const res = await fetch("https://pokeapi.co/api/v2/pokedex/national");
+  const data = await res.json();
+  
+  const allEntries = data.pokemon_entries.map((p: any) => ({
+    id: p.entry_number,
+    name: p.pokemon_species.name
+  }));
+
+  console.log(`Found ${allEntries.length} Pokemon.`);
+
+  // Batch insert to avoid hitting limits
+  const BATCH_SIZE = 100;
+  for (let i = 0; i < allEntries.length; i += BATCH_SIZE) {
+    const batch = allEntries.slice(i, i + BATCH_SIZE);
+    console.log(`Seeding batch ${i} - ${i + batch.length}...`);
+    
+    // We use the mutation we defined in convex/pokedex.ts
+    // Note: To call internal mutations from outside, they usually need to be public or we use `npx convex run`
+    // Since we can't easily use the client for internal mutations without a backdoor, 
+    // let's try to just output the data and assume we run it via a special internal admin function
+    // OR, better, we make the seed function "admin" accessible (internal is fine if run via `convex run`)
+  }
+}
+// Actually, `npx convex run` is the best way to execute logic that calls internal mutations.
+// Let's rewrite this script to simply be the logic, and we invoke it via `npx convex run`.
+// Wait, `convex run` runs a function ON THE SERVER. It can't fetch from external URLs easily if the runtime is restricted (Convex runtime uses fetch, but it's specific).
+// AND `convex run` takes the function name.
+
+// Plan B: Write a script that uses `fetch` locally to get data, then calls a PUBLIC mutation to insert.
+// But we want to keep `seedPokedex` internal.
+// We can use `npx convex run` to call an ACTION that does the fetching and seeding.
+
+// NEW PLAN:
+// 1. Create `convex/admin_actions.ts` with an action `seedPokedexData`.
+// 2. This action fetches the PokeAPI and calls `internal.pokedex.seedPokedex`.
+// 3. Run `npx convex run admin_actions:seedPokedexData`.

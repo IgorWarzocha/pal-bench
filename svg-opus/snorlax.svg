@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Snorlax -->
+  <!-- Body (big round) -->
+  <ellipse cx="50" cy="60" rx="38" ry="35" fill="#1A535C"/>
+  
+  <!-- Belly -->
+  <ellipse cx="50" cy="65" rx="28" ry="28" fill="#E8D9B0"/>
+  
+  <!-- Face -->
+  <ellipse cx="50" cy="30" rx="22" ry="18" fill="#1A535C"/>
+  
+  <!-- Eyes (closed, sleeping) -->
+  <path d="M35 28 Q40 25 45 28" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+  <path d="M55 28 Q60 25 65 28" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+  
+  <!-- Mouth (open, snoring) -->
+  <ellipse cx="50" cy="40" rx="8" ry="5" fill="#2C2C2C"/>
+  <path d="M44 38 L44 42" stroke="#FFFFFF" stroke-width="2"/>
+  <path d="M56 38 L56 42" stroke="#FFFFFF" stroke-width="2"/>
+  
+  <!-- Ears -->
+  <ellipse cx="30" cy="18" rx="6" ry="8" fill="#1A535C"/>
+  <ellipse cx="70" cy="18" rx="6" ry="8" fill="#1A535C"/>
+  
+  <!-- Arms -->
+  <ellipse cx="15" cy="55" rx="10" ry="12" fill="#1A535C"/>
+  <ellipse cx="85" cy="55" rx="10" ry="12" fill="#1A535C"/>
+  
+  <!-- Claws -->
+  <circle cx="12" cy="65" r="3" fill="#E8D9B0"/>
+  <circle cx="18" cy="67" r="3" fill="#E8D9B0"/>
+  <circle cx="88" cy="65" r="3" fill="#E8D9B0"/>
+  <circle cx="82" cy="67" r="3" fill="#E8D9B0"/>
+  
+  <!-- Feet -->
+  <ellipse cx="35" cy="92" rx="12" ry="6" fill="#1A535C"/>
+  <ellipse cx="65" cy="92" rx="12" ry="6" fill="#1A535C"/>
+  <circle cx="28" cy="92" r="3" fill="#E8D9B0"/>
+  <circle cx="35" cy="94" r="3" fill="#E8D9B0"/>
+  <circle cx="42" cy="92" r="3" fill="#E8D9B0"/>
+  <circle cx="58" cy="92" r="3" fill="#E8D9B0"/>
+  <circle cx="65" cy="94" r="3" fill="#E8D9B0"/>
+  <circle cx="72" cy="92" r="3" fill="#E8D9B0"/>
+  
+  <!-- Z's for sleeping -->
+  <text x="75" y="15" font-family="Arial" font-size="10" fill="#888">Z</text>
+  <text x="82" y="8" font-family="Arial" font-size="8" fill="#888">z</text>
+  <text x="87" y="3" font-family="Arial" font-size="6" fill="#888">z</text>
+</svg>

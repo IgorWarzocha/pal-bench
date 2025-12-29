@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script type="module">
+      if (import.meta.env.DEV) {
+        import("react-grab").then((m) =>
+          m.init({
+            activationMode: "hold",
+            keyHoldDuration: 150,
+            allowActivationInsideInput: true,
+            maxContextLines: 3,
+          }),
+        );
+        import("@react-grab/opencode/client");
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/convex.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/index.css" />
+    <title>Vite + React + TS</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

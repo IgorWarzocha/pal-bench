@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Ditto -->
+  <!-- Main blob body -->
+  <ellipse cx="50" cy="55" rx="35" ry="30" fill="#A890F0"/>
+  
+  <!-- Blob irregularities -->
+  <ellipse cx="25" cy="50" rx="8" ry="12" fill="#A890F0"/>
+  <ellipse cx="75" cy="50" rx="8" ry="12" fill="#A890F0"/>
+  <ellipse cx="35" cy="75" rx="10" ry="8" fill="#A890F0"/>
+  <ellipse cx="65" cy="75" rx="10" ry="8" fill="#A890F0"/>
+  
+  <!-- Simple face -->
+  <!-- Eyes (dots) -->
+  <ellipse cx="38" cy="48" rx="4" ry="5" fill="#2C2C2C"/>
+  <ellipse cx="62" cy="48" rx="4" ry="5" fill="#2C2C2C"/>
+  <circle cx="39" cy="46" r="1.5" fill="#D8C8F8"/>
+  <circle cx="63" cy="46" r="1.5" fill="#D8C8F8"/>
+  
+  <!-- Mouth (simple line) -->
+  <path d="M42 60 L58 60" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Shine/highlight -->
+  <ellipse cx="60" cy="35" rx="8" ry="5" fill="#C8B8F8" opacity="0.6"/>
+  
+  <!-- Transform sparkles -->
+  <path d="M15 30 L17 25 L19 30 L24 32 L19 34 L17 39 L15 34 L10 32 Z" fill="#FFD700" opacity="0.7"/>
+  <path d="M80 25 L82 20 L84 25 L89 27 L84 29 L82 34 L80 29 L75 27 Z" fill="#FFD700" opacity="0.7"/>
+</svg>
