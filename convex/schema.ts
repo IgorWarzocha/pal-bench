@@ -44,7 +44,7 @@ export default defineSchema({
     clientId: v.string(),
     type: v.union(v.literal("image"), v.literal("data")),
     value: v.union(v.literal("up"), v.literal("down")),
-    timestamp: v.number(),
+    timestamp: v.optional(v.number()),
   })
     .index("by_client_submission", ["clientId", "submissionId", "type"])
     .index("by_submission", ["submissionId"])

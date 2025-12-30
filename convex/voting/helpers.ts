@@ -61,7 +61,9 @@ export async function processVote(
   const { upField, downField } = getVoteFields(type);
 
   // If there's a recent vote within the cooldown period, update it
-  if (recentVote && recentVote.timestamp > cooldownThreshold) {
+  // Votes without timestamp (pre-migration) are treated as expired
+  const voteTimestamp = recentVote?.timestamp ?? 0;
+  if (recentVote && voteTimestamp > cooldownThreshold) {
     if (recentVote.value === value) {
       return { action: "unchanged", previousValue: recentVote.value };
     }

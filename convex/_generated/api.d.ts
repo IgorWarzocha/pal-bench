@@ -10,6 +10,7 @@
 
 import type * as admin from "../admin.js";
 import type * as admin_actions from "../admin_actions.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as maintenance from "../maintenance.js";
 import type * as queries from "../queries.js";
@@ -37,6 +38,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   admin_actions: typeof admin_actions;
+  crons: typeof crons;
   http: typeof http;
   maintenance: typeof maintenance;
   queries: typeof queries;

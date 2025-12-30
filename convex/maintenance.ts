@@ -1,9 +1,70 @@
 /**
  * convex/maintenance.ts
- * Database maintenance and migration scripts.
- * Includes retroactive hallucination flagging for data integrity.
+ * Database maintenance, migrations, and scheduled cleanup jobs.
+ * Handles vote expiry and hallucination flagging.
  */
+import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
+import { VOTE_COOLDOWN_MS } from "./voting/helpers";
+
+/**
+ * Backfills timestamp on votes that are missing it.
+ * Uses _creationTime as the timestamp value. Run once after schema migration.
+ */
+export const backfillVoteTimestamps = internalMutation({
+  args: {},
+  returns: v.object({
+    updated: v.number(),
+  }),
+  handler: async (ctx, _args) => {
+    const votes = await ctx.db.query("votes").collect();
+    let updated = 0;
+
+    for (const vote of votes) {
+      if ((vote as Record<string, unknown>).timestamp === undefined) {
+        await ctx.db.patch("votes", vote._id, {
+          timestamp: vote._creationTime,
+        });
+        updated++;
+      }
+    }
+
+    return { updated };
+  },
+});
+
+/**
+ * Deletes votes older than 48 hours. Called by cron job.
+ * Processes in batches to avoid timeouts on large datasets.
+ */
+export const cleanupExpiredVotes = internalMutation({
+  args: {
+    batchSize: v.optional(v.number()),
+  },
+  returns: v.object({
+    deleted: v.number(),
+    hasMore: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const batchSize = args.batchSize ?? 500;
+    const threshold = Date.now() - VOTE_COOLDOWN_MS;
+
+    const expiredVotes = await ctx.db
+      .query("votes")
+      .withIndex("by_timestamp")
+      .filter((q) => q.lt(q.field("timestamp"), threshold))
+      .take(batchSize);
+
+    for (const vote of expiredVotes) {
+      await ctx.db.delete("votes", vote._id);
+    }
+
+    return {
+      deleted: expiredVotes.length,
+      hasMore: expiredVotes.length === batchSize,
+    };
+  },
+});
 
 export const flagInvalidNames = internalMutation({
   args: {},

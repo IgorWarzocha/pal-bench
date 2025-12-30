@@ -108,7 +108,8 @@ export const removeVote = mutation({
       .first();
 
     // Only allow removing votes within the cooldown period
-    if (!recentVote || recentVote.timestamp <= cooldownThreshold) {
+    const voteTimestamp = recentVote?.timestamp ?? 0;
+    if (!recentVote || voteTimestamp <= cooldownThreshold) {
       return { removed: false, previousValue: null };
     }
 

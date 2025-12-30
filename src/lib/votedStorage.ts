@@ -5,6 +5,7 @@
  */
 
 const VOTED_IDS_KEY = "poke-bench-voted-ids-v2";
+const LEGACY_KEY = "poke-bench-voted-ids";
 
 /** 48 hours in milliseconds - must match backend VOTE_COOLDOWN_MS */
 const VOTE_COOLDOWN_MS = 48 * 60 * 60 * 1000;
@@ -14,14 +15,22 @@ interface VoteRecord {
   timestamp: number;
 }
 
+/** Removes legacy storage key on first access */
+function migrateLegacyStorage(): void {
+  if (typeof window === "undefined") return;
+  if (localStorage.getItem(LEGACY_KEY)) {
+    localStorage.removeItem(LEGACY_KEY);
+  }
+}
+
 function getVoteRecords(): VoteRecord[] {
   if (typeof window === "undefined") return [];
+  migrateLegacyStorage();
 
   const stored = localStorage.getItem(VOTED_IDS_KEY);
   if (!stored) return [];
 
-  const records: VoteRecord[] = JSON.parse(stored);
-  return records;
+  return JSON.parse(stored) as VoteRecord[];
 }
 
 function setVoteRecords(records: VoteRecord[]): void {

@@ -43,11 +43,11 @@ export const getClientVotes = query({
 
     return {
       imageVote:
-        imageVote && imageVote.timestamp > cooldownThreshold
+        imageVote && (imageVote.timestamp ?? 0) > cooldownThreshold
           ? imageVote.value
           : null,
       dataVote:
-        dataVote && dataVote.timestamp > cooldownThreshold
+        dataVote && (dataVote.timestamp ?? 0) > cooldownThreshold
           ? dataVote.value
           : null,
     };
@@ -91,7 +91,8 @@ export const getClientVotesBatch = query({
     );
 
     for (const vote of allClientVotes) {
-      if (vote.timestamp <= cooldownThreshold) continue;
+      const voteTimestamp = vote.timestamp ?? 0;
+      if (voteTimestamp <= cooldownThreshold) continue;
 
       const subId = vote.submissionId as string;
       if (submissionIdSet.has(subId)) {
@@ -122,7 +123,8 @@ export const getClientVotedIds = query({
 
     const votedIds = new Set<string>();
     for (const vote of votes) {
-      if (vote.type === "image" && vote.timestamp > cooldownThreshold) {
+      const voteTimestamp = vote.timestamp ?? 0;
+      if (vote.type === "image" && voteTimestamp > cooldownThreshold) {
         votedIds.add(vote.submissionId as string);
       }
     }
