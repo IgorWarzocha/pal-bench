@@ -1,7 +1,7 @@
 /**
  * convex/voting/mutations.ts
- * Vote casting and removal mutations.
- * Includes single-vote and batch operations for efficiency.
+ * Vote casting and removal mutations with 48-hour rolling cooldown.
+ * Updates denormalized counts on submissions for efficient queries.
  */
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
@@ -9,7 +9,9 @@ import {
   voteTypeValidator,
   voteValueValidator,
   getVoteFields,
+  processVote,
   VoteUpdate,
+  VOTE_COOLDOWN_MS,
 } from "./helpers";
 
 export const castVote = mutation({
@@ -33,57 +35,7 @@ export const castVote = mutation({
       throw new Error("Submission not found");
     }
 
-    const existingVote = await ctx.db
-      .query("votes")
-      .withIndex("by_client_submission", (q) =>
-        q
-          .eq("clientId", args.clientId)
-          .eq("submissionId", args.submissionId)
-          .eq("type", args.type),
-      )
-      .unique();
-
-    const { upField, downField } = getVoteFields(args.type);
-
-    if (existingVote) {
-      if (existingVote.value === args.value) {
-        return {
-          action: "unchanged" as const,
-          previousValue: existingVote.value,
-        };
-      }
-
-      await ctx.db.patch("votes", existingVote._id, { value: args.value });
-
-      const updates: VoteUpdate = {};
-      if (args.value === "up") {
-        updates[upField] = submission[upField] + 1;
-        updates[downField] = submission[downField] - 1;
-      } else {
-        updates[upField] = submission[upField] - 1;
-        updates[downField] = submission[downField] + 1;
-      }
-
-      await ctx.db.patch("submissions", args.submissionId, updates);
-      return { action: "updated" as const, previousValue: existingVote.value };
-    }
-
-    await ctx.db.insert("votes", {
-      submissionId: args.submissionId,
-      clientId: args.clientId,
-      type: args.type,
-      value: args.value,
-    });
-
-    const updates: VoteUpdate = {};
-    if (args.value === "up") {
-      updates[upField] = submission[upField] + 1;
-    } else {
-      updates[downField] = submission[downField] + 1;
-    }
-
-    await ctx.db.patch("submissions", args.submissionId, updates);
-    return { action: "created" as const, previousValue: null };
+    return processVote(ctx, submission, args.clientId, args.type, args.value);
   },
 });
 
@@ -106,61 +58,23 @@ export const castVotesBatch = mutation({
   }),
   handler: async (ctx, args) => {
     const stats = { processed: 0, created: 0, updated: 0, unchanged: 0 };
-    const { upField, downField } = getVoteFields(args.type);
 
     for (const vote of args.votes) {
       const submission = await ctx.db.get("submissions", vote.submissionId);
       if (!submission) continue;
 
       stats.processed++;
+      const result = await processVote(
+        ctx,
+        submission,
+        args.clientId,
+        args.type,
+        vote.value,
+      );
 
-      const existingVote = await ctx.db
-        .query("votes")
-        .withIndex("by_client_submission", (q) =>
-          q
-            .eq("clientId", args.clientId)
-            .eq("submissionId", vote.submissionId)
-            .eq("type", args.type),
-        )
-        .unique();
-
-      if (existingVote) {
-        if (existingVote.value === vote.value) {
-          stats.unchanged++;
-          continue;
-        }
-
-        await ctx.db.patch("votes", existingVote._id, { value: vote.value });
-
-        const updates: VoteUpdate = {};
-        if (vote.value === "up") {
-          updates[upField] = submission[upField] + 1;
-          updates[downField] = submission[downField] - 1;
-        } else {
-          updates[upField] = submission[upField] - 1;
-          updates[downField] = submission[downField] + 1;
-        }
-
-        await ctx.db.patch("submissions", vote.submissionId, updates);
-        stats.updated++;
-      } else {
-        await ctx.db.insert("votes", {
-          submissionId: vote.submissionId,
-          clientId: args.clientId,
-          type: args.type,
-          value: vote.value,
-        });
-
-        const updates: VoteUpdate = {};
-        if (vote.value === "up") {
-          updates[upField] = submission[upField] + 1;
-        } else {
-          updates[downField] = submission[downField] + 1;
-        }
-
-        await ctx.db.patch("submissions", vote.submissionId, updates);
-        stats.created++;
-      }
+      if (result.action === "created") stats.created++;
+      else if (result.action === "updated") stats.updated++;
+      else stats.unchanged++;
     }
 
     return stats;
@@ -178,7 +92,11 @@ export const removeVote = mutation({
     previousValue: v.union(v.literal("up"), v.literal("down"), v.null()),
   }),
   handler: async (ctx, args) => {
-    const existingVote = await ctx.db
+    const now = Date.now();
+    const cooldownThreshold = now - VOTE_COOLDOWN_MS;
+
+    // Find the most recent vote within cooldown period
+    const recentVote = await ctx.db
       .query("votes")
       .withIndex("by_client_submission", (q) =>
         q
@@ -186,9 +104,11 @@ export const removeVote = mutation({
           .eq("submissionId", args.submissionId)
           .eq("type", args.type),
       )
-      .unique();
+      .order("desc")
+      .first();
 
-    if (!existingVote) {
+    // Only allow removing votes within the cooldown period
+    if (!recentVote || recentVote.timestamp <= cooldownThreshold) {
       return { removed: false, previousValue: null };
     }
 
@@ -197,18 +117,18 @@ export const removeVote = mutation({
       throw new Error("Submission not found");
     }
 
-    await ctx.db.delete("votes", existingVote._id);
+    await ctx.db.delete("votes", recentVote._id);
 
     const { upField, downField } = getVoteFields(args.type);
     const updates: VoteUpdate = {};
 
-    if (existingVote.value === "up") {
+    if (recentVote.value === "up") {
       updates[upField] = Math.max(0, submission[upField] - 1);
     } else {
       updates[downField] = Math.max(0, submission[downField] - 1);
     }
 
     await ctx.db.patch("submissions", args.submissionId, updates);
-    return { removed: true, previousValue: existingVote.value };
+    return { removed: true, previousValue: recentVote.value };
   },
 });

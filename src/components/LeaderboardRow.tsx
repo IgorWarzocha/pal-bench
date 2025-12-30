@@ -20,7 +20,11 @@ function formatRank(rank: number): string {
   return `#${rank}`;
 }
 
-export function LeaderboardRow({ submission, rank }: LeaderboardRowProps) {
+export function LeaderboardRow({
+  submission,
+  rank,
+  hideImage = false,
+}: LeaderboardRowProps & { hideImage?: boolean }) {
   const netScore = submission.upvotes_image - submission.downvotes_image;
 
   return (
@@ -28,19 +32,20 @@ export function LeaderboardRow({ submission, rank }: LeaderboardRowProps) {
       <div className="w-10 text-center text-lg font-bold">
         {formatRank(rank)}
       </div>
-      <div
-        className="w-12 h-12 rounded-md border bg-muted/20 flex items-center justify-center overflow-hidden p-1 flex-shrink-0"
-        dangerouslySetInnerHTML={{
-          __html: submission.svgCode.slice(0, 5000),
-        }}
-      />
+      <div className="w-12 h-12 rounded-md border bg-muted/20 flex items-center justify-center overflow-hidden p-1 flex-shrink-0">
+        {!hideImage && (
+          <div
+            className="w-full h-full"
+            dangerouslySetInnerHTML={{
+              __html: submission.svgCode.slice(0, 5000),
+            }}
+          />
+        )}
+      </div>
       <div className="flex-grow min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-medium capitalize truncate">
             {submission.name}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            #{submission.pokedexNumber}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -62,7 +67,7 @@ export function LeaderboardRow({ submission, rank }: LeaderboardRowProps) {
           {netScore > 0 ? "+" : ""}
           {netScore}
         </span>
-        <span className="text-xs text-muted-foreground">visual score</span>
+        <span className="text-xs text-muted-foreground">score</span>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ export {
   getSubmission,
   listSubmissions,
   getRecentSubmissions,
-  getSubmissionsByPokedex,
+  getSubmissionsBySpecies,
   getSubmissionsByModel,
   getRandomUnvotedSubmissions,
   getLeaderboard,

@@ -11,10 +11,11 @@ import { Button } from "./ui/button";
 export type VoteValue = "up" | "down";
 
 interface VoteButtonsProps {
-  label: string;
+  label?: string;
   currentVote: VoteValue | null | undefined;
   score: number | null;
   onVote: (value: VoteValue) => void;
+  className?: string;
 }
 
 export function VoteButtons({
@@ -22,6 +23,7 @@ export function VoteButtons({
   currentVote,
   score,
   onVote,
+  className,
 }: VoteButtonsProps) {
   const scoreColor =
     score === null
@@ -33,9 +35,15 @@ export function VoteButtons({
           : "";
 
   return (
-    <div className="flex items-center justify-between bg-muted/30 p-2 rounded-md">
-      <span className="text-sm font-medium">{label}</span>
-      <div className="flex items-center gap-1">
+    <div
+      className={`flex items-center justify-between bg-muted/30 p-2 rounded-md ${
+        className || ""
+      }`}
+    >
+      {label && <span className="text-sm font-medium">{label}</span>}
+      <div
+        className={`flex items-center gap-1 ${!label ? "w-full justify-center" : ""}`}
+      >
         <Button
           variant={currentVote === "down" ? "destructive" : "ghost"}
           size="icon"

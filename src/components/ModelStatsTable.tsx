@@ -4,17 +4,16 @@
  * Displays submission count, scores, and hallucination rates.
  */
 
-interface ModelStat {
+export interface ModelStats {
   model: string;
   submissionCount: number;
   avgNetScoreImage: number;
-  avgNetScoreData: number;
   hallucinationRate: number;
   hallucinationCount: number;
 }
 
 interface ModelStatsTableProps {
-  stats: ModelStat[];
+  stats: ModelStats[];
 }
 
 export function ModelStatsTable({ stats }: ModelStatsTableProps) {
@@ -30,10 +29,7 @@ export function ModelStatsTable({ stats }: ModelStatsTableProps) {
               Submissions
             </th>
             <th className="h-10 px-2 text-right align-middle font-medium text-muted-foreground">
-              Image Score
-            </th>
-            <th className="h-10 px-2 text-right align-middle font-medium text-muted-foreground">
-              Data Score
+              Score
             </th>
             <th className="h-10 px-2 text-right align-middle font-medium text-muted-foreground">
               Hallucinations
@@ -53,14 +49,8 @@ export function ModelStatsTable({ stats }: ModelStatsTableProps) {
               <td className="p-2 align-middle text-right text-purple-600 font-bold">
                 {model.avgNetScoreImage.toFixed(1)}
               </td>
-              <td className="p-2 align-middle text-right text-green-600 font-bold">
-                {model.avgNetScoreData.toFixed(1)}
-              </td>
               <td className="p-2 align-middle text-right text-red-600 font-bold">
                 {model.hallucinationRate.toFixed(1)}%
-                <span className="text-xs text-muted-foreground ml-1 font-normal">
-                  ({model.hallucinationCount})
-                </span>
               </td>
             </tr>
           ))}

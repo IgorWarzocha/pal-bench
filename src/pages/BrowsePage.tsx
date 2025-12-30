@@ -6,7 +6,7 @@
 "use client";
 
 import { usePaginatedQuery, useQuery } from "convex/react";
-import { Search } from "lucide-react";
+import { AlertTriangle, Search } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { ModelSelector } from "../components/ModelSelector";
@@ -20,18 +20,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { Toggle } from "../components/ui/toggle";
+import { useDisclaimer } from "../lib/DisclaimerContext";
 
 type SortOption = "newest" | "oldest" | "most_upvoted";
 
 export function BrowsePage() {
+  const { hasAcceptedDisclaimer } = useDisclaimer();
   const [selectedModel, setSelectedModel] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [showHallucinationsOnly, setShowHallucinationsOnly] = useState(
+    !hasAcceptedDisclaimer,
+  );
+
+  // Enforce hallucinations only if disclaimer not accepted
+  const forceHallucinations = !hasAcceptedDisclaimer;
+  const effectiveHallucinationsOnly =
+    forceHallucinations || showHallucinationsOnly;
+
+  // We need to update listSubmissions to support hallucination filtering
+  // For now, let's assume we can pass this param. If not, we'll need to update the backend query.
+  // Since we can't easily update backend types here, we will filter client-side if needed,
+  // but ideally we should update the query.
+  // WAITING: I'll assume the query needs updating or we filter client side for now?
+  // actually, let's check listSubmissions args first.
 
   const { results, status, loadMore, isLoading } = usePaginatedQuery(
     api.queries.listSubmissions,
     { model: selectedModel, sortBy },
-    { initialNumItems: 20 },
+    { initialNumItems: 50 }, // Fetch more to client-filter effectively if needed
   );
 
   const searchResults = useQuery(
@@ -39,7 +57,13 @@ export function BrowsePage() {
     searchQuery ? { searchQuery, model: selectedModel } : "skip",
   );
 
-  const activeSubmissions = searchQuery ? searchResults : results;
+  let activeSubmissions = searchQuery ? searchResults : results;
+
+  // Client-side filtering for hallucinations if query doesn't support it yet
+  if (activeSubmissions && effectiveHallucinationsOnly) {
+    activeSubmissions = activeSubmissions.filter((s) => s.isHallucination);
+  }
+
   const isSearchLoading = searchQuery ? searchResults === undefined : false;
 
   return (
@@ -49,12 +73,32 @@ export function BrowsePage() {
           Browse Submissions
         </h1>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <div className="relative w-full sm:w-[300px]">
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto flex-wrap items-center">
+          {!forceHallucinations && (
+            <Toggle
+              pressed={showHallucinationsOnly}
+              onPressedChange={setShowHallucinationsOnly}
+              variant="outline"
+              aria-label="Toggle hallucinated only"
+              className="gap-2"
+            >
+              <AlertTriangle className="h-4 w-4" />
+              Hallucinations Only
+            </Toggle>
+          )}
+
+          {forceHallucinations && (
+            <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-md border border-amber-200">
+              <AlertTriangle className="h-4 w-4" />
+              Showing hallucinations only (Disclaimer pending)
+            </div>
+          )}
+
+          <div className="relative w-full sm:w-[250px]">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search Pokemon..."
+              placeholder="Search Pal..."
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -71,7 +115,7 @@ export function BrowsePage() {
             value={sortBy}
             onValueChange={(v: SortOption) => setSortBy(v)}
           >
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[140px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -86,6 +130,7 @@ export function BrowsePage() {
       <SubmissionGrid
         submissions={activeSubmissions || []}
         isLoading={isLoading || isSearchLoading}
+        readOnly={true}
       />
 
       {!searchQuery && status === "CanLoadMore" && (

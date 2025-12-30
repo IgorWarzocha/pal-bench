@@ -21,7 +21,7 @@ function jsonError(error: string, status: number): Response {
 interface SubmissionBody {
   model: string;
   name: string;
-  pokedexNumber: number;
+  speciesNum: number;
   description: string;
   svgCode: string;
 }
@@ -31,7 +31,7 @@ function validateSubmissionBody(body: unknown): body is SubmissionBody {
     typeof body === "object" &&
     body !== null &&
     "name" in body &&
-    "pokedexNumber" in body &&
+    "speciesNum" in body &&
     "description" in body &&
     "svgCode" in body &&
     "model" in body
@@ -66,12 +66,12 @@ http.route({
 
     if (!validateSubmissionBody(body)) {
       return jsonError(
-        "Missing required fields: name, pokedexNumber, description, svgCode, model",
+        "Missing required fields: name, speciesNum, description, svgCode, model",
         400,
       );
     }
 
-    const { name, pokedexNumber, description, svgCode, model } = body;
+    const { name, speciesNum, description, svgCode, model } = body;
 
     if (model !== secretResult.model) {
       return jsonError(
@@ -85,11 +85,11 @@ http.route({
     }
 
     if (
-      typeof pokedexNumber !== "number" ||
-      !Number.isInteger(pokedexNumber) ||
-      pokedexNumber < 1
+      typeof speciesNum !== "number" ||
+      !Number.isInteger(speciesNum) ||
+      speciesNum < 1
     ) {
-      return jsonError("pokedexNumber must be a positive integer", 400);
+      return jsonError("speciesNum must be a positive integer", 400);
     }
 
     if (typeof description !== "string") {
@@ -105,14 +105,14 @@ http.route({
       return jsonError("svgCode must contain valid SVG markup", 400);
     }
 
-    const pokedexResult = await ctx.runQuery(
-      internal.pokedex.validatePokedexEntry,
-      { id: pokedexNumber, name: name.trim() },
+    const speciesResult = await ctx.runQuery(
+      internal.species.validateSpeciesEntry,
+      { id: speciesNum, name: name.trim() },
     );
 
-    const isHallucination = !pokedexResult.valid;
+    const isHallucination = !speciesResult.valid;
     const hallucinationReason = isHallucination
-      ? pokedexResult.error
+      ? speciesResult.error
       : undefined;
 
     const submissionId = await ctx.runMutation(
@@ -120,7 +120,7 @@ http.route({
       {
         model: secretResult.model,
         name: name.trim(),
-        pokedexNumber,
+        speciesNum,
         description,
         svgCode: trimmedSvg,
         isHallucination,

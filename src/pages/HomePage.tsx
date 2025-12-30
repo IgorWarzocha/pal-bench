@@ -1,20 +1,17 @@
-/**
- * src/pages/HomePage.tsx
- * Main landing page with "Rate 5 Pokemon" batch voting and leaderboard.
- * Uses localStorage to track voted IDs and batch mutations for efficiency.
- */
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
-import { RefreshCw, Trophy } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
-import { LeaderboardRow } from "../components/LeaderboardRow";
-import { PokemonCard } from "../components/PokemonCard";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
+import {
+  DisclaimerOverlay,
+  LeaderboardSection,
+  VotingSection,
+} from "../components/home";
 import { Button } from "../components/ui/button";
-import { Skeleton } from "../components/ui/skeleton";
+import { useDisclaimer } from "../lib/DisclaimerContext";
 import { getFingerprint } from "../lib/fingerprint";
 import { addVotedIds, getVotedIds } from "../lib/votedStorage";
 import type { VoteValue } from "../components/VoteButtons";
@@ -25,168 +22,159 @@ interface PendingVote {
 }
 
 export function HomePage() {
-  const clientId = useMemo(() => getFingerprint(), []);
+  const [clientId] = useState(() => getFingerprint());
+  const { hasAcceptedDisclaimer, acceptDisclaimer } = useDisclaimer();
+
+  const [view, setView] = useState<"voting" | "results">("voting");
   const [batchKey, setBatchKey] = useState(0);
   const [pendingVotes, setPendingVotes] = useState<Map<string, VoteValue>>(
     new Map(),
   );
+  const [currentSubmissions, setCurrentSubmissions] = useState<
+    Doc<"submissions">[]
+  >([]);
+
+  // Track user preference for leaderboard type
+  const [preferredLeaderboardType, setPreferredLeaderboardType] = useState<
+    "pals" | "models"
+  >("pals");
+
+  // Derived state: if disclaimer not accepted, force "models"
+  const leaderboardType = hasAcceptedDisclaimer
+    ? preferredLeaderboardType
+    : "models";
+
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   const excludeIds = useMemo(() => {
-    void batchKey;
+    void batchKey; // Ensure dependency on batchKey to refresh voted IDs
     return getVotedIds() as Id<"submissions">[];
   }, [batchKey]);
 
-  const randomSubmissions = useQuery(api.queries.getRandomUnvotedSubmissions, {
-    excludeIds,
-    limit: 5,
-  });
+  const randomSubmissions = useQuery(
+    api.queries.getRandomUnvotedSubmissions,
+    hasAcceptedDisclaimer ? { excludeIds, limit: 5 } : "skip",
+  );
 
   const leaderboard = useQuery(api.queries.getLeaderboard, { limit: 10 });
+  const stats = useQuery(api.queries.getStats, {});
   const castVotesBatch = useMutation(api.voting.castVotesBatch);
 
-  const votedCount = pendingVotes.size;
-  const allVoted = votedCount === 5 && randomSubmissions?.length === 5;
+  // Lock in submissions when available
+  if (
+    view === "voting" &&
+    randomSubmissions &&
+    randomSubmissions.length > 0 &&
+    currentSubmissions.length === 0
+  ) {
+    setCurrentSubmissions(randomSubmissions);
+  }
 
-  const handleNextBatch = useCallback(() => {
-    if (pendingVotes.size === 0) {
-      setBatchKey((k) => k + 1);
-      return;
-    }
+  const handleSubmitBatch = useCallback(
+    (finalVotes: Map<string, VoteValue>) => {
+      if (finalVotes.size === 0) return;
 
-    const votes: PendingVote[] = [];
-    pendingVotes.forEach((value, submissionId) => {
-      votes.push({
-        submissionId: submissionId as Id<"submissions">,
-        value,
+      const votes: PendingVote[] = [];
+      finalVotes.forEach((value, submissionId) => {
+        votes.push({ submissionId: submissionId as Id<"submissions">, value });
       });
-    });
 
-    void castVotesBatch({ votes, clientId, type: "image" });
-    addVotedIds(votes.map((v) => v.submissionId));
+      void castVotesBatch({ votes, clientId, type: "image" });
+      setView("results");
+      setTimeRemaining(3);
+    },
+    [castVotesBatch, clientId],
+  );
+
+  const handleContinue = useCallback(() => {
+    const ids = Array.from(pendingVotes.keys()) as Id<"submissions">[];
+    addVotedIds(ids);
+
     setPendingVotes(new Map());
+    setCurrentSubmissions([]);
     setBatchKey((k) => k + 1);
-  }, [pendingVotes, castVotesBatch, clientId]);
+    setView("voting");
+    setTimeRemaining(null);
+  }, [pendingVotes]);
 
   const handleLocalVote = useCallback(
     (submissionId: string, value: VoteValue) => {
-      setPendingVotes((prev) => {
-        const next = new Map(prev);
-        next.set(submissionId, value);
-        return next;
-      });
+      const nextVotes = new Map(pendingVotes);
+      nextVotes.set(submissionId, value);
+
+      setPendingVotes(nextVotes);
+
+      if (
+        currentSubmissions.length > 0 &&
+        nextVotes.size === currentSubmissions.length
+      ) {
+        handleSubmitBatch(nextVotes);
+      }
     },
-    [],
+    [pendingVotes, currentSubmissions.length, handleSubmitBatch],
   );
 
-  const userVotesFromPending = useMemo(() => {
-    const result: Record<
-      string,
-      { imageVote: VoteValue | null; dataVote: VoteValue | null }
-    > = {};
-    pendingVotes.forEach((value, id) => {
-      result[id] = { imageVote: value, dataVote: null };
-    });
-    return result;
-  }, [pendingVotes]);
+  useEffect(() => {
+    if (view !== "results") return;
+
+    // Timer is initialized in handleSubmitBatch, so we just handle the countdown
+    const interval = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev === null) return null;
+        if (prev <= 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
+    const timer = setTimeout(() => {
+      handleContinue();
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
+  }, [view, handleContinue]);
+
+  const isOutOfSubmissions =
+    view === "voting" &&
+    randomSubmissions !== undefined &&
+    currentSubmissions.length === 0 &&
+    excludeIds.length > 0;
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-12">
-      {/* Hero Section */}
-      <section className="space-y-6">
-        <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            Rate 5 Random Pokemon
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Help evaluate AI-generated Pokemon art. Vote on visual quality for
-            each submission below, then submit all votes at once.
-          </p>
-          {randomSubmissions && randomSubmissions.length === 0 && (
-            <p className="text-muted-foreground">
-              You've voted on all submissions! Check back later for more.
-            </p>
-          )}
-        </div>
-
-        {randomSubmissions && randomSubmissions.length > 0 && (
-          <ProgressBar
-            votedCount={votedCount}
-            allVoted={allVoted}
-            onSubmit={handleNextBatch}
-          />
+      <div className="relative">
+        {!hasAcceptedDisclaimer && (
+          <DisclaimerOverlay onAccept={acceptDisclaimer} />
         )}
+        <VotingSection
+          submissions={currentSubmissions}
+          pendingVotes={pendingVotes}
+          view={view}
+          timeRemaining={timeRemaining}
+          isOutOfSubmissions={isOutOfSubmissions}
+          isLoading={currentSubmissions.length === 0 && !isOutOfSubmissions}
+          onVote={handleLocalVote}
+        />
+      </div>
 
-        <div
-          key={batchKey}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6"
-        >
-          {randomSubmissions === undefined
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="aspect-square w-full rounded-lg" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              ))
-            : randomSubmissions.map((submission) => (
-                <PokemonCard
-                  key={submission._id}
-                  submission={submission}
-                  userVotes={userVotesFromPending[submission._id as string]}
-                  onVote={(value) =>
-                    handleLocalVote(submission._id as string, value)
-                  }
-                  pendingMode
-                />
-              ))}
-        </div>
-      </section>
+      <LeaderboardSection
+        type={leaderboardType}
+        onTypeChange={setPreferredLeaderboardType}
+        leaderboard={leaderboard}
+        modelStats={stats?.modelStats}
+        canToggle={hasAcceptedDisclaimer}
+        canNavigate={hasAcceptedDisclaimer}
+      />
 
-      {/* Leaderboard Section */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Trophy className="w-6 h-6 text-yellow-500" />
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Leaderboard
-            </h2>
-          </div>
-          <Link href="/browse">
-            <Button variant="ghost">View all submissions</Button>
-          </Link>
-        </div>
-
-        <div className="rounded-lg border bg-card">
-          {leaderboard === undefined ? (
-            <div className="p-4 space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full" />
-              ))}
-            </div>
-          ) : leaderboard.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              No submissions yet. Be the first to contribute!
-            </div>
-          ) : (
-            <div className="divide-y">
-              {leaderboard.map((submission, index) => (
-                <LeaderboardRow
-                  key={submission._id}
-                  submission={submission}
-                  rank={index + 1}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Call to Action */}
       <section className="text-center space-y-4 py-8">
         <h2 className="text-2xl font-semibold">Explore More</h2>
         <div className="flex justify-center gap-4">
           <Link href="/browse">
-            <Button size="lg">Browse All Submissions</Button>
+            <Button size="lg" disabled={!hasAcceptedDisclaimer}>
+              Browse All Submissions
+            </Button>
           </Link>
           <Link href="/stats">
             <Button variant="outline" size="lg">
@@ -195,44 +183,6 @@ export function HomePage() {
           </Link>
         </div>
       </section>
-    </div>
-  );
-}
-
-interface ProgressBarProps {
-  votedCount: number;
-  allVoted: boolean;
-  onSubmit: () => void;
-}
-
-function ProgressBar({ votedCount, allVoted, onSubmit }: ProgressBarProps) {
-  return (
-    <div className="flex items-center justify-center gap-4">
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Progress:</span>
-        <div className="flex gap-1">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                i < votedCount
-                  ? "bg-primary"
-                  : "bg-muted border border-muted-foreground/30"
-              }`}
-            />
-          ))}
-        </div>
-        <span className="text-sm font-medium">{votedCount}/5</span>
-      </div>
-      <Button
-        onClick={onSubmit}
-        variant={allVoted ? "default" : "outline"}
-        size="sm"
-        disabled={votedCount === 0}
-      >
-        <RefreshCw className="w-4 h-4 mr-2" />
-        {allVoted ? "Submit & Load More" : `Submit ${votedCount} Votes`}
-      </Button>
     </div>
   );
 }

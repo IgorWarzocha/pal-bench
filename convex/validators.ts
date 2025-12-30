@@ -1,7 +1,6 @@
 /**
  * convex/validators.ts
- * Shared validators and type definitions for Convex functions.
- * Provides reusable validators for submissions and common patterns.
+ * Centralized validators for all Convex function arguments and return types.
  */
 import { v } from "convex/values";
 
@@ -10,7 +9,7 @@ export const submissionValidator = v.object({
   _creationTime: v.number(),
   model: v.string(),
   name: v.string(),
-  pokedexNumber: v.number(),
+  speciesNum: v.number(),
   description: v.string(),
   svgCode: v.string(),
   upvotes_image: v.number(),
@@ -28,5 +27,29 @@ export const sortByValidator = v.union(
   v.literal("most_upvoted"),
 );
 
-// Re-export vote validators from voting module for convenience
+export const modelStatsValidator = v.object({
+  model: v.string(),
+  submissionCount: v.number(),
+  totalUpvotesImage: v.number(),
+  totalDownvotesImage: v.number(),
+  totalUpvotesData: v.number(),
+  totalDownvotesData: v.number(),
+  avgNetScoreImage: v.number(),
+  avgNetScoreData: v.number(),
+  hallucinationCount: v.number(),
+  hallucinationRate: v.number(),
+});
+
+export const platformStatsValidator = v.object({
+  totalSubmissions: v.number(),
+  totalVotes: v.number(),
+  totalHallucinations: v.number(),
+  hallucinationRate: v.number(),
+  modelStats: v.array(modelStatsValidator),
+  speciesCoverage: v.object({
+    unique: v.number(),
+    total: v.number(),
+  }),
+});
+
 export { voteTypeValidator, voteValueValidator } from "./voting/helpers";

@@ -1,6 +1,6 @@
 /**
  * convex/submission.ts
- * Internal functions for creating and validating Pokemon submissions.
+ * Internal functions for creating and validating Pal submissions.
  * Handles API key validation and hallucination flagging.
  */
 import { v } from "convex/values";
@@ -36,7 +36,7 @@ export const createSubmission = internalMutation({
   args: {
     model: v.string(),
     name: v.string(),
-    pokedexNumber: v.number(),
+    speciesNum: v.number(),
     description: v.string(),
     svgCode: v.string(),
     isHallucination: v.boolean(),
@@ -47,29 +47,29 @@ export const createSubmission = internalMutation({
     let isHallucination = args.isHallucination;
     let hallucinationReason = args.hallucinationReason;
 
-    // Validate against Pokedex if not already flagged
+    // Validate against Species if not already flagged
     if (!isHallucination) {
-      const pokedexEntry = await ctx.db
-        .query("pokedex")
-        .withIndex("by_pokedex_id", (q) => q.eq("id", args.pokedexNumber))
+      const speciesEntry = await ctx.db
+        .query("species")
+        .withIndex("by_species_id", (q) => q.eq("id", args.speciesNum))
         .unique();
 
-      if (!pokedexEntry) {
+      if (!speciesEntry) {
         isHallucination = true;
-        hallucinationReason = `Invalid Pokedex ID: ${args.pokedexNumber}`;
+        hallucinationReason = `Invalid Species ID: ${args.speciesNum}`;
       } else if (
-        pokedexEntry.name.toLowerCase().trim() !==
+        speciesEntry.name.toLowerCase().trim() !==
         args.name.toLowerCase().trim()
       ) {
         isHallucination = true;
-        hallucinationReason = `Name mismatch: Expected "${pokedexEntry.name}", got "${args.name}"`;
+        hallucinationReason = `Name mismatch: Expected "${speciesEntry.name}", got "${args.name}"`;
       }
     }
 
     const submissionId = await ctx.db.insert("submissions", {
       model: args.model,
       name: args.name,
-      pokedexNumber: args.pokedexNumber,
+      speciesNum: args.speciesNum,
       description: args.description,
       svgCode: args.svgCode,
       upvotes_image: 0,
@@ -96,7 +96,7 @@ export const getSubmission = internalQuery({
       _creationTime: v.number(),
       model: v.string(),
       name: v.string(),
-      pokedexNumber: v.number(),
+      speciesNum: v.number(),
       description: v.string(),
       svgCode: v.string(),
       upvotes_image: v.number(),

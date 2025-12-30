@@ -9,11 +9,11 @@ export const flagInvalidNames = internalMutation({
   args: {},
   handler: async (ctx) => {
     const submissions = await ctx.db.query("submissions").collect();
-    const pokedexEntries = await ctx.db.query("pokedex").collect();
+    const speciesEntries = await ctx.db.query("species").collect();
 
-    const pokedexMap = new Map<number, string>();
-    for (const p of pokedexEntries) {
-      pokedexMap.set(p.id, p.name.toLowerCase().trim());
+    const speciesMap = new Map<number, string>();
+    for (const s of speciesEntries) {
+      speciesMap.set(s.id, s.name.toLowerCase().trim());
     }
 
     let flaggedCount = 0;
@@ -28,18 +28,18 @@ export const flagInvalidNames = internalMutation({
       if (isHallucination === true) continue;
 
       checkedCount++;
-      const expectedName = pokedexMap.get(submission.pokedexNumber);
+      const expectedName = speciesMap.get(submission.speciesNum);
 
       if (!expectedName) {
         await ctx.db.patch("submissions", submission._id, {
           isHallucination: true,
-          hallucinationReason: `Invalid Pokedex ID: ${submission.pokedexNumber}`,
+          hallucinationReason: `Invalid Species ID: ${submission.speciesNum}`,
         });
         flaggedCount++;
       } else if (submission.name.toLowerCase().trim() !== expectedName) {
         await ctx.db.patch("submissions", submission._id, {
           isHallucination: true,
-          hallucinationReason: `Name mismatch: Expected "${expectedName}" (ID ${submission.pokedexNumber}), got "${submission.name}"`,
+          hallucinationReason: `Name mismatch: Expected "${expectedName}" (ID ${submission.speciesNum}), got "${submission.name}"`,
         });
         flaggedCount++;
       } else if (submission.isHallucination === undefined) {

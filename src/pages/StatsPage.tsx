@@ -42,7 +42,7 @@ export function StatsPage() {
   }
 
   const coveragePercent = Math.round(
-    (stats.pokedexCoverage.unique / stats.pokedexCoverage.total) * 100,
+    (stats.speciesCoverage.unique / stats.speciesCoverage.total) * 100,
   );
 
   return (
@@ -61,14 +61,14 @@ export function StatsPage() {
           value={stats.totalVotes.toLocaleString()}
         />
         <StatCard
-          title="Pokedex Coverage"
+          title="Coverage"
           value={`${coveragePercent}%`}
-          subtitle={`${stats.pokedexCoverage.unique} / ${stats.pokedexCoverage.total} unique Pokemon`}
+          subtitle={`${stats.speciesCoverage.unique} / ${stats.speciesCoverage.total} valid & unique entries`}
         />
         <StatCard
           title="Hallucination Rate"
           value={`${stats.hallucinationRate.toFixed(1)}%`}
-          subtitle={`${stats.totalHallucinations} flagged`}
+          subtitle="flagged outputs"
           valueClassName="text-red-600"
         />
       </div>
@@ -78,7 +78,12 @@ export function StatsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Model Performance (Average Net Score)</CardTitle>
+            <CardTitle>
+              Model Performance{" "}
+              <span className="text-muted-foreground font-normal text-base">
+                (average net upvotes per submission)
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -96,14 +101,8 @@ export function StatsPage() {
                 <Legend />
                 <Bar
                   dataKey="avgNetScoreImage"
-                  name="Visual Quality"
+                  name="Score"
                   fill="#8884d8"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="avgNetScoreData"
-                  name="Data Accuracy"
-                  fill="#82ca9d"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>

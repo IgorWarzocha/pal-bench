@@ -1,5 +1,5 @@
 ---
-description: Run the Pokemon benchmark. Usage: /benchmark <model_name> <secret> [api_url]
+description: Run the Pokemon benchmark.
 agent: benchmark
 ---
 

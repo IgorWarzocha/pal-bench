@@ -1,10 +1,11 @@
 /**
  * convex/voting/queries.ts
- * Vote retrieval queries for client state management.
+ * Vote retrieval queries respecting the 48-hour rolling cooldown.
+ * Only returns votes within the active cooldown window.
  */
 import { v } from "convex/values";
 import { query } from "../_generated/server";
-import { VoteValue } from "./helpers";
+import { VoteValue, VOTE_COOLDOWN_MS } from "./helpers";
 
 export const getClientVotes = query({
   args: {
@@ -16,6 +17,8 @@ export const getClientVotes = query({
     dataVote: v.union(v.literal("up"), v.literal("down"), v.null()),
   }),
   handler: async (ctx, args) => {
+    const cooldownThreshold = Date.now() - VOTE_COOLDOWN_MS;
+
     const imageVote = await ctx.db
       .query("votes")
       .withIndex("by_client_submission", (q) =>
@@ -24,7 +27,8 @@ export const getClientVotes = query({
           .eq("submissionId", args.submissionId)
           .eq("type", "image"),
       )
-      .unique();
+      .order("desc")
+      .first();
 
     const dataVote = await ctx.db
       .query("votes")
@@ -34,11 +38,18 @@ export const getClientVotes = query({
           .eq("submissionId", args.submissionId)
           .eq("type", "data"),
       )
-      .unique();
+      .order("desc")
+      .first();
 
     return {
-      imageVote: imageVote?.value ?? null,
-      dataVote: dataVote?.value ?? null,
+      imageVote:
+        imageVote && imageVote.timestamp > cooldownThreshold
+          ? imageVote.value
+          : null,
+      dataVote:
+        dataVote && dataVote.timestamp > cooldownThreshold
+          ? dataVote.value
+          : null,
     };
   },
 });
@@ -56,6 +67,7 @@ export const getClientVotesBatch = query({
     }),
   ),
   handler: async (ctx, args) => {
+    const cooldownThreshold = Date.now() - VOTE_COOLDOWN_MS;
     const result: Record<
       string,
       { imageVote: VoteValue | null; dataVote: VoteValue | null }
@@ -79,6 +91,8 @@ export const getClientVotesBatch = query({
     );
 
     for (const vote of allClientVotes) {
+      if (vote.timestamp <= cooldownThreshold) continue;
+
       const subId = vote.submissionId as string;
       if (submissionIdSet.has(subId)) {
         if (vote.type === "image") {
@@ -99,6 +113,8 @@ export const getClientVotedIds = query({
   },
   returns: v.array(v.string()),
   handler: async (ctx, args) => {
+    const cooldownThreshold = Date.now() - VOTE_COOLDOWN_MS;
+
     const votes = await ctx.db
       .query("votes")
       .withIndex("by_client_submission", (q) => q.eq("clientId", args.clientId))
@@ -106,7 +122,7 @@ export const getClientVotedIds = query({
 
     const votedIds = new Set<string>();
     for (const vote of votes) {
-      if (vote.type === "image") {
+      if (vote.type === "image" && vote.timestamp > cooldownThreshold) {
         votedIds.add(vote.submissionId as string);
       }
     }

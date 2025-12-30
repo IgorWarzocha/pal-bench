@@ -4,7 +4,7 @@
  * Used on the StatsPage for key metrics like total submissions, votes, etc.
  */
 import type { ReactNode } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card } from "./ui/card";
 
 interface StatCardProps {
   title: string;
@@ -20,18 +20,18 @@ export function StatCard({
   valueClassName = "",
 }: StatCardProps) {
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card className="p-4 gap-2">
+      <div className="flex flex-col gap-1">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className={`text-4xl font-bold ${valueClassName}`}>{value}</div>
+        </p>
+        <div className={`text-2xl font-bold ${valueClassName}`}>{value}</div>
         {subtitle && (
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
+          <p className="text-[10px] text-muted-foreground font-medium">
+            {subtitle}
+          </p>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

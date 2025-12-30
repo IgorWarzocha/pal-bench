@@ -1,42 +1,84 @@
 /**
  * src/lib/votedStorage.ts
- * LocalStorage utility for tracking voted submission IDs.
- * Avoids expensive votes table queries by keeping state client-side.
+ * LocalStorage utility for tracking voted submission IDs with 48-hour expiry.
+ * Enables re-voting after cooldown period expires (rolling vote system).
  */
 
-const VOTED_IDS_KEY = "poke-bench-voted-ids";
+const VOTED_IDS_KEY = "poke-bench-voted-ids-v2";
 
-export function getVotedIds(): string[] {
-  if (typeof window === "undefined") return [];
+/** 48 hours in milliseconds - must match backend VOTE_COOLDOWN_MS */
+const VOTE_COOLDOWN_MS = 48 * 60 * 60 * 1000;
 
-  try {
-    const stored = localStorage.getItem(VOTED_IDS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+interface VoteRecord {
+  id: string;
+  timestamp: number;
 }
 
+function getVoteRecords(): VoteRecord[] {
+  if (typeof window === "undefined") return [];
+
+  const stored = localStorage.getItem(VOTED_IDS_KEY);
+  if (!stored) return [];
+
+  const records: VoteRecord[] = JSON.parse(stored);
+  return records;
+}
+
+function setVoteRecords(records: VoteRecord[]): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(VOTED_IDS_KEY, JSON.stringify(records));
+}
+
+/** Removes expired votes and returns active records */
+function pruneExpired(records: VoteRecord[]): VoteRecord[] {
+  const threshold = Date.now() - VOTE_COOLDOWN_MS;
+  return records.filter((r) => r.timestamp > threshold);
+}
+
+/** Returns IDs of submissions voted on within the cooldown period */
+export function getVotedIds(): string[] {
+  const records = pruneExpired(getVoteRecords());
+  setVoteRecords(records);
+  return records.map((r) => r.id);
+}
+
+/** Adds a single submission ID with current timestamp */
 export function addVotedId(id: string): void {
   if (typeof window === "undefined") return;
 
-  const ids = getVotedIds();
-  if (!ids.includes(id)) {
-    ids.push(id);
-    localStorage.setItem(VOTED_IDS_KEY, JSON.stringify(ids));
+  const records = pruneExpired(getVoteRecords());
+  const existingIndex = records.findIndex((r) => r.id === id);
+
+  if (existingIndex >= 0) {
+    records[existingIndex].timestamp = Date.now();
+  } else {
+    records.push({ id, timestamp: Date.now() });
   }
+
+  setVoteRecords(records);
 }
 
+/** Adds multiple submission IDs with current timestamp */
 export function addVotedIds(newIds: string[]): void {
   if (typeof window === "undefined") return;
 
-  const ids = new Set(getVotedIds());
+  const records = pruneExpired(getVoteRecords());
+  const existingIds = new Set(records.map((r) => r.id));
+  const now = Date.now();
+
   for (const id of newIds) {
-    ids.add(id);
+    if (existingIds.has(id)) {
+      const record = records.find((r) => r.id === id);
+      if (record) record.timestamp = now;
+    } else {
+      records.push({ id, timestamp: now });
+    }
   }
-  localStorage.setItem(VOTED_IDS_KEY, JSON.stringify(Array.from(ids)));
+
+  setVoteRecords(records);
 }
 
+/** Clears all vote records (for testing/debugging) */
 export function clearVotedIds(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(VOTED_IDS_KEY);

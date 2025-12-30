@@ -1,6 +1,6 @@
 /**
  * convex/queries/submissions.ts
- * Core submission queries for fetching, listing, and filtering Pokemon submissions.
+ * Core submission queries for fetching, listing, and filtering Pal submissions.
  * Handles pagination and model-based filtering.
  */
 import { v } from "convex/values";
@@ -63,15 +63,15 @@ export const getRecentSubmissions = query({
   },
 });
 
-export const getSubmissionsByPokedex = query({
+export const getSubmissionsBySpecies = query({
   args: {
-    pokedexNumber: v.number(),
+    speciesNum: v.number(),
   },
   returns: v.array(submissionValidator),
   handler: async (ctx, args) => {
     return await ctx.db
       .query("submissions")
-      .withIndex("by_pokedex", (q) => q.eq("pokedexNumber", args.pokedexNumber))
+      .withIndex("by_species_num", (q) => q.eq("speciesNum", args.speciesNum))
       .collect();
   },
 });
