@@ -24,6 +24,7 @@ interface SubmissionBody {
   speciesNum: number;
   description: string;
   svgCode: string;
+  username?: string; // Optional for backwards compatibility
 }
 
 function validateSubmissionBody(body: unknown): body is SubmissionBody {
@@ -35,6 +36,7 @@ function validateSubmissionBody(body: unknown): body is SubmissionBody {
     "description" in body &&
     "svgCode" in body &&
     "model" in body
+    // username is optional for backwards compatibility with old API keys
   );
 }
 
@@ -48,13 +50,10 @@ http.route({
     }
 
     const apiKey = authHeader.slice(7);
-    const secretResult = await ctx.runQuery(
-      internal.submission.validateSecret,
-      { key: apiKey },
-    );
+    const secretResult = await ctx.runQuery(internal.submission.validateSecret, { key: apiKey });
 
     if (!secretResult) {
-      return jsonError("Invalid or inactive API key", 403);
+      return jsonError("Invalid or expired API key", 403);
     }
 
     let body: unknown;
@@ -71,7 +70,15 @@ http.route({
       );
     }
 
-    const { name, speciesNum, description, svgCode, model } = body;
+    const { name, speciesNum, description, svgCode, model, username } = body;
+
+    // Verify username matches the API key (if key has username set)
+    if (secretResult.username !== undefined && username !== secretResult.username) {
+      return jsonError(
+        `Username mismatch: API key belongs to "${secretResult.username}", not "${username}"`,
+        403,
+      );
+    }
 
     if (model !== secretResult.model) {
       return jsonError(
@@ -84,11 +91,7 @@ http.route({
       return jsonError("name must be a non-empty string", 400);
     }
 
-    if (
-      typeof speciesNum !== "number" ||
-      !Number.isInteger(speciesNum) ||
-      speciesNum < 1
-    ) {
+    if (typeof speciesNum !== "number" || !Number.isInteger(speciesNum) || speciesNum < 1) {
       return jsonError("speciesNum must be a positive integer", 400);
     }
 
@@ -105,28 +108,23 @@ http.route({
       return jsonError("svgCode must contain valid SVG markup", 400);
     }
 
-    const speciesResult = await ctx.runQuery(
-      internal.species.validateSpeciesEntry,
-      { id: speciesNum, name: name.trim() },
-    );
+    const speciesResult = await ctx.runQuery(internal.species.validateSpeciesEntry, {
+      id: speciesNum,
+      name: name.trim(),
+    });
 
     const isHallucination = !speciesResult.valid;
-    const hallucinationReason = isHallucination
-      ? speciesResult.error
-      : undefined;
+    const hallucinationReason = isHallucination ? speciesResult.error : undefined;
 
-    const submissionId = await ctx.runMutation(
-      internal.submission.createSubmission,
-      {
-        model: secretResult.model,
-        name: name.trim(),
-        speciesNum,
-        description,
-        svgCode: trimmedSvg,
-        isHallucination,
-        hallucinationReason,
-      },
-    );
+    const submissionId = await ctx.runMutation(internal.submission.createSubmission, {
+      model: secretResult.model,
+      name: name.trim(),
+      speciesNum,
+      description,
+      svgCode: trimmedSvg,
+      isHallucination,
+      hallucinationReason,
+    });
 
     return new Response(
       JSON.stringify({

@@ -57,13 +57,7 @@ export const getModels = query({
   args: {},
   returns: v.array(v.string()),
   handler: async (ctx) => {
-    const submissions = await ctx.db.query("submissions").collect();
-
-    const uniqueModels = new Set<string>();
-    for (const submission of submissions) {
-      uniqueModels.add(submission.model);
-    }
-
-    return Array.from(uniqueModels).sort();
+    const models = await ctx.db.query("modelStats").collect();
+    return models.map((m) => m.model).sort();
   },
 });

@@ -1,6 +1,6 @@
 # TAILWIND4.md — Tailwind CSS 4.1 Agent Reference
 
-> Use this file as a *mechanical spec* for Tailwind CSS v4.1.
+> Use this file as a _mechanical spec_ for Tailwind CSS v4.1.
 > Assume modern browsers (Safari ≥16.4, Chrome ≥111, Firefox ≥128) unless legacy mode is explicitly required.
 > v4.1 Released: April 2025.
 
@@ -31,7 +31,6 @@
 ### 2.1 Base CSS entry file
 
 - Always have a main stylesheet, e.g. `src/app.css`:
-
   - Minimal:
 
         @import "tailwindcss";
@@ -50,11 +49,11 @@
 - **Vite plugin** (preferred for most React / Svelte / Vue / etc.):
   - Install via npm: `tailwindcss` + `@tailwindcss/vite`
   - `vite.config.ts`:
-        import { defineConfig } from "vite";
-        import tailwindcss from "@tailwindcss/vite";
-        export default defineConfig({
-          plugins: [tailwindcss()],
-        });
+    import { defineConfig } from "vite";
+    import tailwindcss from "@tailwindcss/vite";
+    export default defineConfig({
+    plugins: [tailwindcss()],
+    });
 
 - **CLI**:
   - Use when no bundler or as standalone build step.
@@ -133,13 +132,13 @@
   - Safelist specific classes. Supports brace expansion: `inline("{hover:,}bg-red-500")`.
 - `@utility <name> { ... }`
   - Define custom utilities that support variants:
-        @utility tab-4 { tab-size: 4; }
+    @utility tab-4 { tab-size: 4; }
 - `@variant`
   - Apply existing variants in custom CSS:
-        @variant dark { background: black; }
+    @variant dark { background: black; }
 - `@custom-variant <name> (<selector>)`
   - Register new variant:
-        @custom-variant theme-midnight (&:where([data-theme="midnight"] *));
+    @custom-variant theme-midnight (&:where([data-theme="midnight"] \*));
 - `@apply`
   - Inline utility styles.
 - `@reference "<path>"`
@@ -164,13 +163,13 @@
 - **NO** string concatenation: `text-{{ color }}-600` (Will not work).
 - **YES** full class names: `text-red-600`.
 - Maps/Objects:
-      const variants = { error: "text-red-600", success: "text-green-600" };
+  const variants = { error: "text-red-600", success: "text-green-600" };
 
 ### 5.2 Explicit sources & Safelisting
 
 - Add source: `@source "../node_modules/ui-lib";`
 - Safelist:
-      @source inline("text-shadow-sm", "text-shadow-red-500");
+  @source inline("text-shadow-sm", "text-shadow-red-500");
 
 ---
 
@@ -196,7 +195,7 @@
 
 - Default: Uses `prefers-color-scheme`.
 - Class-based override:
-      @custom-variant dark (&:where(.dark, .dark *));
+  @custom-variant dark (&:where(.dark, .dark \*));
 
 ### 6.4 Container queries
 
@@ -221,7 +220,7 @@
 - `user-valid:` / `user-invalid:`
   - Matches `:user-valid` / `:user-invalid` pseudo-classes (style only after user interaction).
   - Example:
-        <input class="border user-invalid:border-red-500 user-valid:border-green-500" />
+    <input class="border user-invalid:border-red-500 user-valid:border-green-500" />
 
 ---
 
@@ -240,7 +239,7 @@
   - Usage: `justify-safe-center`, `align-safe-center`.
 - **Baseline Last**:
   - `items-baseline-last`, `self-baseline-last`.
-  - Aligns items based on the *last* line of text in the element.
+  - Aligns items based on the _last_ line of text in the element.
 
 ---
 
@@ -281,7 +280,7 @@
 - Utilities:
   - `wrap-normal` (normal)
   - `wrap-break-word` (break-word)
-  - `wrap-anywhere` (anywhere) — *v4.1 Addition for aggressive wrapping.*
+  - `wrap-anywhere` (anywhere) — _v4.1 Addition for aggressive wrapping._
 
 ---
 
@@ -305,11 +304,11 @@
 ### 10.1 CSS-first Extensibility
 
 - **Custom Utility**:
-      @utility btn {
-        @apply px-4 py-2 rounded bg-blue-500 text-white;
-      }
+  @utility btn {
+  @apply px-4 py-2 rounded bg-blue-500 text-white;
+  }
 - **Custom Variant**:
-      @custom-variant pointer-coarse (@media (pointer: coarse));
+  @custom-variant pointer-coarse (@media (pointer: coarse));
 
 ### 10.2 Legacy Config
 

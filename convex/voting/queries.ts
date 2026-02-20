@@ -22,10 +22,7 @@ export const getClientVotes = query({
     const imageVote = await ctx.db
       .query("votes")
       .withIndex("by_client_submission", (q) =>
-        q
-          .eq("clientId", args.clientId)
-          .eq("submissionId", args.submissionId)
-          .eq("type", "image"),
+        q.eq("clientId", args.clientId).eq("submissionId", args.submissionId).eq("type", "image"),
       )
       .order("desc")
       .first();
@@ -33,23 +30,15 @@ export const getClientVotes = query({
     const dataVote = await ctx.db
       .query("votes")
       .withIndex("by_client_submission", (q) =>
-        q
-          .eq("clientId", args.clientId)
-          .eq("submissionId", args.submissionId)
-          .eq("type", "data"),
+        q.eq("clientId", args.clientId).eq("submissionId", args.submissionId).eq("type", "data"),
       )
       .order("desc")
       .first();
 
     return {
       imageVote:
-        imageVote && (imageVote.timestamp ?? 0) > cooldownThreshold
-          ? imageVote.value
-          : null,
-      dataVote:
-        dataVote && (dataVote.timestamp ?? 0) > cooldownThreshold
-          ? dataVote.value
-          : null,
+        imageVote && (imageVote.timestamp ?? 0) > cooldownThreshold ? imageVote.value : null,
+      dataVote: dataVote && (dataVote.timestamp ?? 0) > cooldownThreshold ? dataVote.value : null,
     };
   },
 });
@@ -68,10 +57,7 @@ export const getClientVotesBatch = query({
   ),
   handler: async (ctx, args) => {
     const cooldownThreshold = Date.now() - VOTE_COOLDOWN_MS;
-    const result: Record<
-      string,
-      { imageVote: VoteValue | null; dataVote: VoteValue | null }
-    > = {};
+    const result: Record<string, { imageVote: VoteValue | null; dataVote: VoteValue | null }> = {};
 
     for (const id of args.submissionIds) {
       result[id as string] = { imageVote: null, dataVote: null };
@@ -86,9 +72,7 @@ export const getClientVotesBatch = query({
       .withIndex("by_client_submission", (q) => q.eq("clientId", args.clientId))
       .collect();
 
-    const submissionIdSet = new Set(
-      args.submissionIds.map((id) => id as string),
-    );
+    const submissionIdSet = new Set(args.submissionIds.map((id) => id as string));
 
     for (const vote of allClientVotes) {
       const voteTimestamp = vote.timestamp ?? 0;

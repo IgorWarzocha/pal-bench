@@ -7,9 +7,7 @@ import path from "path";
 const [url, key, jsonPath] = process.argv.slice(2);
 
 if (!url || !key || !jsonPath) {
-  console.error(
-    "Usage: node submit.js <CONVEX_HTTP_URL> <API_KEY> <DATA_JSON>",
-  );
+  console.error("Usage: node submit.js <CONVEX_HTTP_URL> <API_KEY> <DATA_JSON>");
   console.error(
     'DATA_JSON example: { "name": "Pikachu", "pokedexNumber": 25, "description": "...", "svgPath": "./pikachu.svg" }',
   );
@@ -20,10 +18,7 @@ async function main() {
   const data = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
 
   if (data.svgPath) {
-    const svgCode = fs.readFileSync(
-      path.resolve(path.dirname(jsonPath), data.svgPath),
-      "utf-8",
-    );
+    const svgCode = fs.readFileSync(path.resolve(path.dirname(jsonPath), data.svgPath), "utf-8");
     data.svgCode = svgCode;
     delete data.svgPath;
   }

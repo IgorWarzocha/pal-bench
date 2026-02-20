@@ -18,17 +18,10 @@ interface SubmissionGridProps {
   readOnly?: boolean;
 }
 
-export function SubmissionGrid({
-  submissions,
-  isLoading,
-  readOnly = false,
-}: SubmissionGridProps) {
+export function SubmissionGrid({ submissions, isLoading, readOnly = false }: SubmissionGridProps) {
   const clientId = useMemo(() => getFingerprint(), []);
 
-  const submissionIds = useMemo(
-    () => submissions.map((s) => s._id),
-    [submissions],
-  );
+  const submissionIds = useMemo(() => submissions.map((s) => s._id), [submissions]);
 
   const votes = useQuery(
     api.voting.getClientVotesBatch,
@@ -42,12 +35,9 @@ export function SubmissionGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[400px] bg-muted/20 animate-pulse rounded-lg"
-          />
+          <div key={i} className="h-[320px] bg-muted/10 animate-pulse rounded-lg" />
         ))}
       </div>
     );
@@ -55,14 +45,12 @@ export function SubmissionGrid({
 
   if (submissions.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        No submissions found.
-      </div>
+      <div className="text-center py-12 text-sm text-muted-foreground">No submissions found.</div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
       {submissions.map((submission) => (
         <PalCard
           key={submission._id}

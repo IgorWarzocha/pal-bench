@@ -155,7 +155,7 @@ Modern React 19+ introduces built-in primitives for Actions and optimistic UI.
 - Replaces most ad-hoc “submit + loading + error” handlers.
 - Signature (conceptual):
 
-    const [state, dispatchAction, isPending] = useActionState(action, initialState);
+  const [state, dispatchAction, isPending] = useActionState(action, initialState);
 
 - Usage pattern:
   - `state`: latest result or status object returned from `action`.
@@ -169,10 +169,10 @@ Modern React 19+ introduces built-in primitives for Actions and optimistic UI.
 
 - Signature (conceptual):
 
-    const [optimisticState, addOptimisticUpdate] = useOptimistic(
-      sourceState,
-      optimisticReducer
-    );
+  const [optimisticState, addOptimisticUpdate] = useOptimistic(
+  sourceState,
+  optimisticReducer
+  );
 
 - Use for:
   - Showing optimistic results (e.g. optimistic list insertion, toggling like buttons) while async work runs.
@@ -225,18 +225,18 @@ Modern React 19+ introduces built-in primitives for Actions and optimistic UI.
 - Only valid in React Server Components or server-side environment.
 - Typical pattern:
 
-    import { cache } from 'react';
+  import { cache } from 'react';
 
-    const fetchUser = cache(async (id) => {
-      const res = await fetch(`https://api/app/users/${id}`);
-      if (!res.ok) throw new Error('Failed');
-      return res.json();
-    });
+  const fetchUser = cache(async (id) => {
+  const res = await fetch(`https://api/app/users/${id}`);
+  if (!res.ok) throw new Error('Failed');
+  return res.json();
+  });
 
-    async function UserProfile({ id }) {
-      const user = await fetchUser(id);
-      return <div>{user.name}</div>;
-    }
+  async function UserProfile({ id }) {
+  const user = await fetchUser(id);
+  return <div>{user.name}</div>;
+  }
 
 - Guidelines:
   - Call `cache` at module scope, not inside components.
@@ -247,11 +247,11 @@ Modern React 19+ introduces built-in primitives for Actions and optimistic UI.
 - `cacheSignal()` returns an `AbortSignal` tied to the lifetime of the cached computation.
 - Typical pattern:
 
-    import { cache, cacheSignal } from 'react';
+  import { cache, cacheSignal } from 'react';
 
-    const dedupedFetch = cache((url) =>
-      fetch(url, { signal: cacheSignal() })
-    );
+  const dedupedFetch = cache((url) =>
+  fetch(url, { signal: cacheSignal() })
+  );
 
 - Use to:
   - Cancel in-flight requests when a render is aborted or finishes.

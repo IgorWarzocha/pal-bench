@@ -35,38 +35,40 @@ export function LeaderboardSection({
     <section className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
-          <Trophy className="w-6 h-6 text-yellow-500" />
-          <h2 className="text-2xl font-semibold tracking-tight">Leaderboard</h2>
+          <div className="p-2 rounded-lg bg-muted">
+            <Trophy className="w-5 h-5 text-amber-500" />
+          </div>
+          <h2 className="text-xl font-semibold tracking-tight">Leaderboard</h2>
         </div>
 
         {canToggle ? (
-          <Tabs
-            value={type}
-            onValueChange={(v) => onTypeChange(v as "pals" | "models")}
-          >
-            <TabsList>
-              <TabsTrigger value="pals">Best Pals</TabsTrigger>
-              <TabsTrigger value="models">Best Models</TabsTrigger>
+          <Tabs value={type} onValueChange={(v) => onTypeChange(v as "pals" | "models")}>
+            <TabsList className="h-9">
+              <TabsTrigger value="pals" className="text-sm">
+                Best Pals
+              </TabsTrigger>
+              <TabsTrigger value="models" className="text-sm">
+                Best Models
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         ) : (
-          <div className="text-sm font-medium text-muted-foreground">
-            Best Models
-          </div>
+          <div className="text-sm font-medium text-muted-foreground">Best Models</div>
         )}
 
         <Link href="/browse">
           <Button
             variant="ghost"
+            size="sm"
             disabled={!canNavigate}
             className={!canNavigate ? "opacity-50" : ""}
           >
-            View all submissions
+            View all
           </Button>
         </Link>
       </div>
 
-      <div className="rounded-lg border bg-card overflow-hidden">
+      <div className="rounded-xl border bg-card overflow-hidden">
         {type === "pals" ? (
           <PalsLeaderboard submissions={leaderboard} />
         ) : (
@@ -77,11 +79,7 @@ export function LeaderboardSection({
   );
 }
 
-function PalsLeaderboard({
-  submissions,
-}: {
-  submissions: Doc<"submissions">[] | undefined;
-}) {
+function PalsLeaderboard({ submissions }: { submissions: Doc<"submissions">[] | undefined }) {
   if (submissions === undefined) {
     return (
       <div className="p-4 space-y-3">
@@ -93,21 +91,13 @@ function PalsLeaderboard({
   }
 
   if (submissions.length === 0) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        No submissions yet.
-      </div>
-    );
+    return <div className="p-8 text-center text-muted-foreground">No submissions yet.</div>;
   }
 
   return (
     <div className="divide-y">
       {submissions.map((submission, index) => (
-        <LeaderboardRow
-          key={submission._id}
-          submission={submission}
-          rank={index + 1}
-        />
+        <LeaderboardRow key={submission._id} submission={submission} rank={index + 1} />
       ))}
     </div>
   );

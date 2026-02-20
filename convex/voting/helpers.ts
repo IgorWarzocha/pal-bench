@@ -6,6 +6,7 @@
 import { v } from "convex/values";
 import type { Doc } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+import { applyVoteDeltaStats } from "../stats_helpers";
 
 export type VoteValue = "up" | "down";
 export type VoteType = "image" | "data";
@@ -50,10 +51,7 @@ export async function processVote(
   const recentVote = await ctx.db
     .query("votes")
     .withIndex("by_client_submission", (q) =>
-      q
-        .eq("clientId", clientId)
-        .eq("submissionId", submission._id)
-        .eq("type", type),
+      q.eq("clientId", clientId).eq("submissionId", submission._id).eq("type", type),
     )
     .order("desc")
     .first();
@@ -80,6 +78,19 @@ export async function processVote(
     }
 
     await ctx.db.patch("submissions", submission._id, updates);
+
+    await applyVoteDeltaStats(ctx, {
+      model: submission.model,
+      upvotesImageDelta:
+        type === "image" ? (value === "up" ? 1 : -1) : 0,
+      downvotesImageDelta:
+        type === "image" ? (value === "down" ? 1 : -1) : 0,
+      upvotesDataDelta:
+        type === "data" ? (value === "up" ? 1 : -1) : 0,
+      downvotesDataDelta:
+        type === "data" ? (value === "down" ? 1 : -1) : 0,
+    });
+
     return { action: "updated", previousValue: recentVote.value };
   }
 
@@ -100,5 +111,15 @@ export async function processVote(
   }
 
   await ctx.db.patch("submissions", submission._id, updates);
+
+  await applyVoteDeltaStats(ctx, {
+    model: submission.model,
+    totalVotesDelta: 1,
+    upvotesImageDelta: type === "image" && value === "up" ? 1 : 0,
+    downvotesImageDelta: type === "image" && value === "down" ? 1 : 0,
+    upvotesDataDelta: type === "data" && value === "up" ? 1 : 0,
+    downvotesDataDelta: type === "data" && value === "down" ? 1 : 0,
+  });
+
   return { action: "created", previousValue: null };
 }

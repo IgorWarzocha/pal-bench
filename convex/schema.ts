@@ -10,7 +10,9 @@ export default defineSchema({
   secrets: defineTable({
     key: v.string(),
     model: v.string(),
+    username: v.optional(v.string()), // For rudimentary double-check
     isActive: v.boolean(),
+    expiresAt: v.optional(v.number()),
   }).index("by_key", ["key"]),
 
   submissions: defineTable({
@@ -56,4 +58,32 @@ export default defineSchema({
   })
     .index("by_species_id", ["id"])
     .index("by_name", ["name"]),
+
+  // Pre-computed stats aggregates to avoid full table scans
+  platformStats: defineTable({
+    totalSubmissions: v.number(),
+    totalVotes: v.number(),
+    totalHallucinations: v.number(),
+    speciesCoverage: v.object({
+      unique: v.number(),
+      total: v.number(),
+    }),
+    lastUpdated: v.number(),
+  }).index("by_last_updated", ["lastUpdated"]),
+
+  modelStats: defineTable({
+    model: v.string(),
+    submissionCount: v.number(),
+    totalUpvotesImage: v.number(),
+    totalDownvotesImage: v.number(),
+    totalUpvotesData: v.number(),
+    totalDownvotesData: v.number(),
+    hallucinationCount: v.number(),
+    avgNetScoreImage: v.number(),
+    avgNetScoreData: v.number(),
+    hallucinationRate: v.number(),
+    lastUpdated: v.number(),
+  })
+    .index("by_model", ["model"])
+    .index("by_last_updated", ["lastUpdated"]),
 });

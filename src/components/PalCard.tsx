@@ -59,23 +59,20 @@ export function PalCard({
     }
   };
 
-  const cleanSvg = useMemo(
-    () => DOMPurify.sanitize(submission.svgCode),
-    [submission.svgCode],
-  );
+  const cleanSvg = useMemo(() => DOMPurify.sanitize(submission.svgCode), [submission.svgCode]);
 
   const imageScore = submission.upvotes_image - submission.downvotes_image;
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-shadow duration-200 gap-0 p-0">
-      <CardHeader className="p-2 pb-0 space-y-0">
-        <div className="flex justify-between items-center h-8">
-          <CardTitle className="text-base capitalize truncate pr-2">
+    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-md hover:border-ring/30 group gap-0 p-0">
+      <CardHeader className="p-3 pb-0 space-y-0">
+        <div className="flex justify-between items-center h-7">
+          <CardTitle className="text-sm font-medium capitalize truncate pr-2 text-muted-foreground group-hover:text-foreground transition-colors">
             {submission.name}
           </CardTitle>
           {!hideDetails && (
-            <div className="flex items-center gap-1 shrink-0">
-              <Badge variant="secondary" className="text-[10px] px-1 h-4">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Badge variant="outline" className="text-[9px] px-1.5 h-5 font-normal">
                 {submission.model}
               </Badge>
               {submission.isHallucination && (
@@ -86,16 +83,16 @@ export function PalCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 flex-grow flex flex-col gap-2">
-        <div className="aspect-square w-full flex items-center justify-center bg-muted/20 rounded-md border overflow-hidden p-2">
+      <CardContent className="p-3 flex-grow flex flex-col gap-3">
+        <div className="aspect-square w-full flex items-center justify-center bg-muted/10 rounded-lg border border-border/50 group-hover:bg-muted/20 group-hover:border-ring/20 transition-all duration-300 overflow-hidden">
           <div
-            className="w-full h-full [&>svg]:w-full [&>svg]:h-full"
+            className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain p-2"
             dangerouslySetInnerHTML={{ __html: cleanSvg }}
           />
         </div>
 
         {submission.description && (
-          <div className="text-[10px] text-muted-foreground line-clamp-2 px-1 min-h-[2.5em] leading-tight">
+          <div className="text-[11px] text-muted-foreground line-clamp-2 px-1 min-h-[2.5em] leading-relaxed">
             {submission.description}
           </div>
         )}
@@ -105,7 +102,7 @@ export function PalCard({
             currentVote={userVote}
             score={hideDetails ? null : imageScore}
             onVote={handleVote}
-            className="w-full"
+            className="w-full mt-auto"
           />
         )}
       </CardContent>

@@ -7,13 +7,7 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface ModelSelectorProps {
   selectedModel?: string;
@@ -21,20 +15,14 @@ interface ModelSelectorProps {
   className?: string;
 }
 
-export function ModelSelector({
-  selectedModel,
-  onSelectModel,
-  className,
-}: ModelSelectorProps) {
+export function ModelSelector({ selectedModel, onSelectModel, className }: ModelSelectorProps) {
   const models = useQuery(api.queries.getModels);
 
   return (
     <div className={className}>
       <Select
         value={selectedModel ?? "all"}
-        onValueChange={(value) =>
-          onSelectModel(value === "all" ? undefined : value)
-        }
+        onValueChange={(value) => onSelectModel(value === "all" ? undefined : value)}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Filter by Model" />

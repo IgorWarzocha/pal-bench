@@ -1,4 +1,4 @@
-# Poke-Bench Benchmark Instructions
+# Pal-Bench Benchmark Instructions
 
 ## 1. Setup API Keys
 
@@ -23,7 +23,7 @@ Create a JSON file (e.g., `entry.json`):
 {
   "name": "Bulbasaur",
   "pokedexNumber": 1,
-  "description": "A green plant pokemon",
+  "description": "A green plant pal",
   "svgPath": "./bulbasaur.svg"
 }
 ```

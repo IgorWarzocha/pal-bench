@@ -18,21 +18,19 @@ export function Header() {
   const { hasAcceptedDisclaimer } = useDisclaimer();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between mx-auto px-4">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold">Pal-Bench</span>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2 font-semibold text-lg tracking-tight">
+            <span className="transition-colors hover:text-foreground/80">Pal-Bench</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm font-medium">
+          <nav className="hidden md:flex items-center gap-6 text-sm">
             {hasAcceptedDisclaimer && (
               <Link
                 href="/browse"
                 className={cn(
-                  "transition-colors hover:text-foreground/80",
-                  location === "/browse"
-                    ? "text-foreground"
-                    : "text-foreground/60",
+                  "transition-all duration-200 hover:text-foreground",
+                  location === "/browse" ? "text-foreground font-medium" : "text-muted-foreground",
                 )}
               >
                 Browse
@@ -41,10 +39,8 @@ export function Header() {
             <Link
               href="/stats"
               className={cn(
-                "transition-colors hover:text-foreground/80",
-                location === "/stats"
-                  ? "text-foreground"
-                  : "text-foreground/60",
+                "transition-all duration-200 hover:text-foreground",
+                location === "/stats" ? "text-foreground font-medium" : "text-muted-foreground",
               )}
             >
               Stats
@@ -52,10 +48,8 @@ export function Header() {
             <Link
               href="/about"
               className={cn(
-                "transition-colors hover:text-foreground/80",
-                location === "/about"
-                  ? "text-foreground"
-                  : "text-foreground/60",
+                "transition-all duration-200 hover:text-foreground",
+                location === "/about" ? "text-foreground font-medium" : "text-muted-foreground",
               )}
             >
               About
@@ -63,14 +57,15 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            className="h-9 w-9"
           >
-            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <SunIcon className="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <MoonIcon className="absolute h-[1.1rem] w-[1.1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
         </div>

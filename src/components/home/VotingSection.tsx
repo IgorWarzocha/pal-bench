@@ -36,38 +36,33 @@ export function VotingSection({
   const remaining = Math.max(0, submissions.length - votedCount);
 
   return (
-    <section className="space-y-6 relative">
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+    <section className="space-y-8 relative">
+      <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
           {isOutOfSubmissions
-            ? "All Caught Up!"
+            ? "All Caught Up"
             : view === "voting"
               ? "Rate Random Pals"
-              : "Batch Complete!"}
+              : "Batch Complete"}
         </h1>
-        <p className="text-lg text-muted-foreground min-h-[1.75rem] flex items-center justify-center">
+        <p className="text-sm text-muted-foreground min-h-[1.5rem] flex items-center justify-center">
           {isOutOfSubmissions ? (
             "You've voted on all available submissions."
           ) : view === "voting" ? (
             <span>
-              Vote on{" "}
-              <span className="font-semibold text-foreground">{remaining}</span>{" "}
-              more to reveal
+              Vote on <span className="font-medium text-foreground">{remaining}</span> more to
+              reveal results
             </span>
           ) : (
-            <span className="flex items-center justify-center gap-2 animate-pulse">
-              Next batch in{" "}
-              <span className="font-semibold text-foreground">
-                {timeRemaining}
-              </span>
-              ...
-              <RefreshCw className="w-4 h-4 animate-spin" />
+            <span className="flex items-center justify-center gap-2">
+              Next batch in <span className="font-medium text-foreground">{timeRemaining}</span>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
             </span>
           )}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
         {isOutOfSubmissions ? (
           <EmptyState />
         ) : isLoading ? (
@@ -79,9 +74,7 @@ export function VotingSection({
               submission={submission}
               userVote={pendingVotes.get(submission._id)}
               onVote={
-                view === "voting"
-                  ? (value) => onVote(submission._id as string, value)
-                  : undefined
+                view === "voting" ? (value) => onVote(submission._id as string, value) : undefined
               }
               hideDetails={view === "voting"}
             />
@@ -94,15 +87,17 @@ export function VotingSection({
 
 function EmptyState() {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center py-12 space-y-4 border rounded-lg bg-muted/10">
-      <Trophy className="w-12 h-12 text-muted-foreground" />
-      <p className="text-xl font-medium">No more Pals to rate!</p>
-      <div className="flex gap-4">
+    <div className="col-span-full flex flex-col items-center justify-center py-16 space-y-4 border rounded-xl bg-muted/5">
+      <Trophy className="w-10 h-10 text-muted-foreground/50" />
+      <p className="text-lg font-medium text-muted-foreground">No more Pals to rate</p>
+      <div className="flex gap-3">
         <Link href="/browse">
-          <Button>Browse All</Button>
+          <Button size="sm">Browse All</Button>
         </Link>
         <Link href="/stats">
-          <Button variant="outline">View Stats</Button>
+          <Button variant="outline" size="sm">
+            View Stats
+          </Button>
         </Link>
       </div>
     </div>

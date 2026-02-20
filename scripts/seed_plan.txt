@@ -13,7 +13,7 @@ if (!CONVEX_URL) {
 const client = new ConvexHttpClient(CONVEX_URL);
 
 async function main() {
-  console.log("Fetching Pokedex...");
+  console.log("Fetching species index...");
   const res = await fetch("https://pokeapi.co/api/v2/pokedex/national");
   const data = await res.json();
   
@@ -22,7 +22,7 @@ async function main() {
     name: p.pokemon_species.name
   }));
 
-  console.log(`Found ${allEntries.length} Pokemon.`);
+  console.log(`Found ${allEntries.length} species entries.`);
 
   // Batch insert to avoid hitting limits
   const BATCH_SIZE = 100;
@@ -48,5 +48,5 @@ async function main() {
 
 // NEW PLAN:
 // 1. Create `convex/admin_actions.ts` with an action `seedPokedexData`.
-// 2. This action fetches the PokeAPI and calls `internal.pokedex.seedPokedex`.
+// 2. This action fetches the species API and calls `internal.pokedex.seedPokedex`.
 // 3. Run `npx convex run admin_actions:seedPokedexData`.

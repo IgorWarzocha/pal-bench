@@ -4,8 +4,8 @@
  * Enables re-voting after cooldown period expires (rolling vote system).
  */
 
-const VOTED_IDS_KEY = "poke-bench-voted-ids-v2";
-const LEGACY_KEY = "poke-bench-voted-ids";
+const VOTED_IDS_KEY = "pal-bench-voted-ids-v2";
+const LEGACY_KEYS = ["poke-bench-voted-ids-v2", "poke-bench-voted-ids"] as const;
 
 /** 48 hours in milliseconds - must match backend VOTE_COOLDOWN_MS */
 const VOTE_COOLDOWN_MS = 48 * 60 * 60 * 1000;
@@ -15,11 +15,22 @@ interface VoteRecord {
   timestamp: number;
 }
 
-/** Removes legacy storage key on first access */
+/** Migrates or removes legacy storage keys on first access */
 function migrateLegacyStorage(): void {
   if (typeof window === "undefined") return;
-  if (localStorage.getItem(LEGACY_KEY)) {
-    localStorage.removeItem(LEGACY_KEY);
+
+  if (!localStorage.getItem(VOTED_IDS_KEY)) {
+    for (const key of LEGACY_KEYS) {
+      const legacyValue = localStorage.getItem(key);
+      if (legacyValue) {
+        localStorage.setItem(VOTED_IDS_KEY, legacyValue);
+        break;
+      }
+    }
+  }
+
+  for (const key of LEGACY_KEYS) {
+    localStorage.removeItem(key);
   }
 }
 

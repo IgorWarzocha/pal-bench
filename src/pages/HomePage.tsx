@@ -4,12 +4,8 @@ import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { api } from "../../convex/_generated/api";
-import type { Doc, Id } from "../../convex/_generated/dataModel";
-import {
-  DisclaimerOverlay,
-  LeaderboardSection,
-  VotingSection,
-} from "../components/home";
+import type { Id } from "../../convex/_generated/dataModel";
+import { DisclaimerOverlay, LeaderboardSection, VotingSection } from "../components/home";
 import { Button } from "../components/ui/button";
 import { useDisclaimer } from "../lib/DisclaimerContext";
 import { getFingerprint } from "../lib/fingerprint";
@@ -27,22 +23,15 @@ export function HomePage() {
 
   const [view, setView] = useState<"voting" | "results">("voting");
   const [batchKey, setBatchKey] = useState(0);
-  const [pendingVotes, setPendingVotes] = useState<Map<string, VoteValue>>(
-    new Map(),
-  );
-  const [currentSubmissions, setCurrentSubmissions] = useState<
-    Doc<"submissions">[]
-  >([]);
+  const [pendingVotes, setPendingVotes] = useState<Map<string, VoteValue>>(new Map());
 
   // Track user preference for leaderboard type
-  const [preferredLeaderboardType, setPreferredLeaderboardType] = useState<
-    "pals" | "models"
-  >("pals");
+  const [preferredLeaderboardType, setPreferredLeaderboardType] = useState<"pals" | "models">(
+    "pals",
+  );
 
   // Derived state: if disclaimer not accepted, force "models"
-  const leaderboardType = hasAcceptedDisclaimer
-    ? preferredLeaderboardType
-    : "models";
+  const leaderboardType = hasAcceptedDisclaimer ? preferredLeaderboardType : "models";
 
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
@@ -60,15 +49,7 @@ export function HomePage() {
   const stats = useQuery(api.queries.getStats, {});
   const castVotesBatch = useMutation(api.voting.castVotesBatch);
 
-  // Lock in submissions when available
-  if (
-    view === "voting" &&
-    randomSubmissions &&
-    randomSubmissions.length > 0 &&
-    currentSubmissions.length === 0
-  ) {
-    setCurrentSubmissions(randomSubmissions);
-  }
+  const currentSubmissions = randomSubmissions ?? [];
 
   const handleSubmitBatch = useCallback(
     (finalVotes: Map<string, VoteValue>) => {
@@ -91,7 +72,6 @@ export function HomePage() {
     addVotedIds(ids);
 
     setPendingVotes(new Map());
-    setCurrentSubmissions([]);
     setBatchKey((k) => k + 1);
     setView("voting");
     setTimeRemaining(null);
@@ -104,10 +84,7 @@ export function HomePage() {
 
       setPendingVotes(nextVotes);
 
-      if (
-        currentSubmissions.length > 0 &&
-        nextVotes.size === currentSubmissions.length
-      ) {
+      if (currentSubmissions.length > 0 && nextVotes.size === currentSubmissions.length) {
         handleSubmitBatch(nextVotes);
       }
     },
@@ -143,11 +120,9 @@ export function HomePage() {
     excludeIds.length > 0;
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12">
+    <div className="container mx-auto px-4 py-10 space-y-12">
       <div className="relative">
-        {!hasAcceptedDisclaimer && (
-          <DisclaimerOverlay onAccept={acceptDisclaimer} />
-        )}
+        {!hasAcceptedDisclaimer && <DisclaimerOverlay onAccept={acceptDisclaimer} />}
         <VotingSection
           submissions={currentSubmissions}
           pendingVotes={pendingVotes}
@@ -168,17 +143,17 @@ export function HomePage() {
         canNavigate={hasAcceptedDisclaimer}
       />
 
-      <section className="text-center space-y-4 py-8">
-        <h2 className="text-2xl font-semibold">Explore More</h2>
-        <div className="flex justify-center gap-4">
+      <section className="text-center space-y-4 py-6">
+        <h2 className="text-lg font-medium text-muted-foreground">Explore More</h2>
+        <div className="flex justify-center gap-3">
           <Link href="/browse">
-            <Button size="lg" disabled={!hasAcceptedDisclaimer}>
-              Browse All Submissions
+            <Button size="sm" disabled={!hasAcceptedDisclaimer}>
+              Browse All
             </Button>
           </Link>
           <Link href="/stats">
-            <Button variant="outline" size="lg">
-              View Statistics
+            <Button variant="outline" size="sm">
+              View Stats
             </Button>
           </Link>
         </div>

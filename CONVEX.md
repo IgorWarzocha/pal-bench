@@ -404,9 +404,7 @@ Sketch for full-text search:
 ```ts
 const messages = await ctx.db
   .query("messages")
-  .withSearchIndex("search_body", (q) =>
-    q.search("body", "hello hi").eq("channel", "#general"),
-  )
+  .withSearchIndex("search_body", (q) => q.search("body", "hello hi").eq("channel", "#general"))
   .take(10);
 ```
 

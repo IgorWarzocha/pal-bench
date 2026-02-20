@@ -47,6 +47,7 @@ The User must run these commands interactively in the terminal. The Agent cannot
     - Select `All` (press `a`, then `Enter`).
 
 3.  **Install Extensions (Optional):**
+
     ```bash
     npx shadcn@latest add @ai-elements/all
     ```

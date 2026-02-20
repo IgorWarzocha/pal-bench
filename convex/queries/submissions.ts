@@ -55,11 +55,7 @@ export const getRecentSubmissions = query({
   handler: async (ctx, args) => {
     const limit = args.limit ?? 10;
 
-    return await ctx.db
-      .query("submissions")
-      .withIndex("by_timestamp")
-      .order("desc")
-      .take(limit);
+    return await ctx.db.query("submissions").withIndex("by_timestamp").order("desc").take(limit);
   },
 });
 

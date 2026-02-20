@@ -1,21 +1,13 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
 interface DisclaimerContextType {
   hasAcceptedDisclaimer: boolean;
   acceptDisclaimer: () => void;
 }
 
-const DisclaimerContext = createContext<DisclaimerContextType | undefined>(
-  undefined,
-);
+const DisclaimerContext = createContext<DisclaimerContextType | undefined>(undefined);
 
 export function DisclaimerProvider({ children }: { children: ReactNode }) {
   const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(() => {
@@ -31,9 +23,7 @@ export function DisclaimerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <DisclaimerContext.Provider
-      value={{ hasAcceptedDisclaimer, acceptDisclaimer }}
-    >
+    <DisclaimerContext.Provider value={{ hasAcceptedDisclaimer, acceptDisclaimer }}>
       {children}
     </DisclaimerContext.Provider>
   );

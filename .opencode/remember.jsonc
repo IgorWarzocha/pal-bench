@@ -11,6 +11,6 @@
     // Number of memories to inject after user messages (default: 5)
     "count": 5,
     // Score threshold for [important] vs [related] tag (default: 0.6)
-    "highThreshold": 0.6
-  }
+    "highThreshold": 0.6,
+  },
 }

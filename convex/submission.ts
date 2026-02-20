@@ -5,6 +5,7 @@
  */
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "./_generated/server";
+import { applySubmissionCreatedStats } from "./stats_helpers";
 
 /**
  * Validates an API key and returns the associated model name if valid.
@@ -12,7 +13,7 @@ import { internalMutation, internalQuery } from "./_generated/server";
  */
 export const validateSecret = internalQuery({
   args: { key: v.string() },
-  returns: v.union(v.object({ model: v.string() }), v.null()),
+  returns: v.union(v.object({ model: v.string(), username: v.optional(v.string()) }), v.null()),
   handler: async (ctx, args) => {
     const secret = await ctx.db
       .query("secrets")
@@ -23,7 +24,11 @@ export const validateSecret = internalQuery({
       return null;
     }
 
-    return { model: secret.model };
+    if (secret.expiresAt === undefined || Date.now() > secret.expiresAt) {
+      return null;
+    }
+
+    return { model: secret.model, username: secret.username };
   },
 });
 
@@ -57,10 +62,7 @@ export const createSubmission = internalMutation({
       if (!speciesEntry) {
         isHallucination = true;
         hallucinationReason = `Invalid Species ID: ${args.speciesNum}`;
-      } else if (
-        speciesEntry.name.toLowerCase().trim() !==
-        args.name.toLowerCase().trim()
-      ) {
+      } else if (speciesEntry.name.toLowerCase().trim() !== args.name.toLowerCase().trim()) {
         isHallucination = true;
         hallucinationReason = `Name mismatch: Expected "${speciesEntry.name}", got "${args.name}"`;
       }
@@ -79,6 +81,12 @@ export const createSubmission = internalMutation({
       isHallucination,
       hallucinationReason,
       timestamp: Date.now(),
+    });
+
+    await applySubmissionCreatedStats(ctx, {
+      model: args.model,
+      speciesNum: args.speciesNum,
+      isHallucination,
     });
 
     return submissionId;

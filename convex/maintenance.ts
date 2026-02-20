@@ -40,29 +40,49 @@ export const backfillVoteTimestamps = internalMutation({
 export const cleanupExpiredVotes = internalMutation({
   args: {
     batchSize: v.optional(v.number()),
+    maxBatches: v.optional(v.number()),
   },
   returns: v.object({
     deleted: v.number(),
     hasMore: v.boolean(),
+    batchesProcessed: v.number(),
   }),
   handler: async (ctx, args) => {
-    const batchSize = args.batchSize ?? 500;
+    const batchSize = args.batchSize ?? 1000;
+    const maxBatches = args.maxBatches ?? 10;
     const threshold = Date.now() - VOTE_COOLDOWN_MS;
 
-    const expiredVotes = await ctx.db
-      .query("votes")
-      .withIndex("by_timestamp")
-      .filter((q) => q.lt(q.field("timestamp"), threshold))
-      .take(batchSize);
+    let deleted = 0;
+    let batchesProcessed = 0;
+    let hasMore = false;
 
-    for (const vote of expiredVotes) {
-      await ctx.db.delete("votes", vote._id);
+    for (let i = 0; i < maxBatches; i++) {
+      const expiredVotes = await ctx.db
+        .query("votes")
+        .withIndex("by_timestamp", (q) => q.lt("timestamp", threshold))
+        .take(batchSize);
+
+      if (expiredVotes.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      for (const vote of expiredVotes) {
+        await ctx.db.delete("votes", vote._id);
+      }
+
+      deleted += expiredVotes.length;
+      batchesProcessed += 1;
+
+      if (expiredVotes.length < batchSize) {
+        hasMore = false;
+        break;
+      }
+
+      hasMore = true;
     }
 
-    return {
-      deleted: expiredVotes.length,
-      hasMore: expiredVotes.length === batchSize,
-    };
+    return { deleted, hasMore, batchesProcessed };
   },
 });
 
